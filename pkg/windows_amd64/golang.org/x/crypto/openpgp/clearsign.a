@@ -1,0 +1,503 @@
+!<arch>
+__.PKGDEF       0           0     0     644     55114     `
+go object windows amd64 go1.5.3 X:none
+build id "f3ba66e4abcca55774c4b5565edc08fc553a5130"
+
+$$
+package clearsign
+	import runtime "runtime"
+	import bufio "bufio"
+	import bytes "bytes"
+	import io "io"
+	import crypto "crypto"
+	import hash "hash"
+	import strconv "strconv"
+	import textproto "net/textproto"
+	import armor "golang.org/x/crypto/openpgp/armor"
+	import errors "golang.org/x/crypto/openpgp/errors"
+	import packet "golang.org/x/crypto/openpgp/packet"
+	type @"net/textproto".MIMEHeader map[string][]string
+	func (@"net/textproto".hÂ·1 @"net/textproto".MIMEHeader "esc:0x9") Add (@"net/textproto".keyÂ·2 string, @"net/textproto".valueÂ·3 string)
+	func (@"net/textproto".hÂ·1 @"net/textproto".MIMEHeader "esc:0x1") Del (@"net/textproto".keyÂ·2 string "esc:0x1")
+	func (@"net/textproto".hÂ·2 @"net/textproto".MIMEHeader "esc:0x1") Get (@"net/textproto".keyÂ·3 string "esc:0x1") (? string)
+	func (@"net/textproto".hÂ·1 @"net/textproto".MIMEHeader "esc:0x1") Set (@"net/textproto".keyÂ·2 string, @"net/textproto".valueÂ·3 string)
+	type @"io".Reader interface { Read(@"io".p []byte) (@"io".n int, @"io".err error) }
+	type @"io".Writer interface { Write(@"io".p []byte) (@"io".n int, @"io".err error) }
+	type @"bufio".Reader struct { @"bufio".buf []byte; @"bufio".rd @"io".Reader; @"bufio".r int; @"bufio".w int; @"bufio".err error; @"bufio".lastByte int; @"bufio".lastRuneSize int }
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x1") Buffered () (? int) { return @"bufio".bÂ·2.@"bufio".w - @"bufio".bÂ·2.@"bufio".r }
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") Discard (@"bufio".nÂ·4 int) (@"bufio".discardedÂ·1 int, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x12a") Peek (@"bufio".nÂ·4 int) (? []byte, ? error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") Read (@"bufio".pÂ·4 []byte) (@"bufio".nÂ·1 int, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") ReadByte () (@"bufio".cÂ·1 byte, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") ReadBytes (@"bufio".delimÂ·4 byte) (@"bufio".lineÂ·1 []byte, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·4 *@"bufio".Reader "esc:0x82a") ReadLine () (@"bufio".lineÂ·1 []byte, @"bufio".isPrefixÂ·2 bool, @"bufio".errÂ·3 error)
+	func (@"bufio".bÂ·4 *@"bufio".Reader "esc:0x80a") ReadRune () (@"bufio".rÂ·1 rune, @"bufio".sizeÂ·2 int, @"bufio".errÂ·3 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x12a") ReadSlice (@"bufio".delimÂ·4 byte) (@"bufio".lineÂ·1 []byte, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") ReadString (@"bufio".delimÂ·4 byte) (@"bufio".lineÂ·1 string, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·1 *@"bufio".Reader "esc:0x9") Reset (@"bufio".rÂ·2 @"io".Reader) { @"bufio".bÂ·1.@"bufio".reset(@"bufio".bÂ·1.@"bufio".buf, @"bufio".rÂ·2) }
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x1") UnreadByte () (? error) { if @"bufio".bÂ·2.@"bufio".lastByte < 0x0 || @"bufio".bÂ·2.@"bufio".r == 0x0 && @"bufio".bÂ·2.@"bufio".w > 0x0 { return @"bufio".ErrInvalidUnreadByte }; if @"bufio".bÂ·2.@"bufio".r > 0x0 { @"bufio".bÂ·2.@"bufio".r-- } else { @"bufio".bÂ·2.@"bufio".w = 0x1 }; @"bufio".bÂ·2.@"bufio".buf[@"bufio".bÂ·2.@"bufio".r] = byte(@"bufio".bÂ·2.@"bufio".lastByte); @"bufio".bÂ·2.@"bufio".lastByte = -0x1; @"bufio".bÂ·2.@"bufio".lastRuneSize = -0x1; return nil }
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x1") UnreadRune () (? error) { if @"bufio".bÂ·2.@"bufio".lastRuneSize < 0x0 || @"bufio".bÂ·2.@"bufio".r < @"bufio".bÂ·2.@"bufio".lastRuneSize { return @"bufio".ErrInvalidUnreadRune }; @"bufio".bÂ·2.@"bufio".r -= @"bufio".bÂ·2.@"bufio".lastRuneSize; @"bufio".bÂ·2.@"bufio".lastByte = -0x1; @"bufio".bÂ·2.@"bufio".lastRuneSize = -0x1; return nil }
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x10a") WriteTo (@"bufio".wÂ·4 @"io".Writer) (@"bufio".nÂ·1 int64, @"bufio".errÂ·2 error)
+	func (@"bufio".bÂ·1 *@"bufio".Reader "esc:0x9") @"bufio".fill ()
+	func (@"bufio".bÂ·2 *@"bufio".Reader "esc:0x22") @"bufio".readErr () (? error) { var @"bufio".errÂ·3 error; ; @"bufio".errÂ·3 = @"bufio".bÂ·2.@"bufio".err; @"bufio".bÂ·2.@"bufio".err = nil; return @"bufio".errÂ·3 }
+	func (@"bufio".bÂ·1 *@"bufio".Reader "esc:0x1") @"bufio".reset (@"bufio".bufÂ·2 []byte, @"bufio".rÂ·3 @"io".Reader) { *@"bufio".bÂ·1 = (@"bufio".Reader{ @"bufio".buf:@"bufio".bufÂ·2, @"bufio".rd:@"bufio".rÂ·3, @"bufio".lastByte:-0x1, @"bufio".lastRuneSize:-0x1 }) }
+	func (@"bufio".bÂ·3 *@"bufio".Reader "esc:0x9") @"bufio".writeBuf (@"bufio".wÂ·4 @"io".Writer) (? int64, ? error)
+	type @"golang.org/x/crypto/openpgp/armor".lineReader struct { @"golang.org/x/crypto/openpgp/armor".in *@"bufio".Reader; @"golang.org/x/crypto/openpgp/armor".buf []byte; @"golang.org/x/crypto/openpgp/armor".eof bool; @"golang.org/x/crypto/openpgp/armor".crc uint32 }
+	func (@"golang.org/x/crypto/openpgp/armor".lÂ·3 *@"golang.org/x/crypto/openpgp/armor".lineReader "esc:0x18a") Read (@"golang.org/x/crypto/openpgp/armor".pÂ·4 []byte "esc:0x1") (@"golang.org/x/crypto/openpgp/armor".nÂ·1 int, @"golang.org/x/crypto/openpgp/armor".errÂ·2 error)
+	type @"golang.org/x/crypto/openpgp/armor".openpgpReader struct { @"golang.org/x/crypto/openpgp/armor".lReader *@"golang.org/x/crypto/openpgp/armor".lineReader; @"golang.org/x/crypto/openpgp/armor".b64Reader @"io".Reader; @"golang.org/x/crypto/openpgp/armor".currentCRC uint32 }
+	func (@"golang.org/x/crypto/openpgp/armor".rÂ·3 *@"golang.org/x/crypto/openpgp/armor".openpgpReader "esc:0x9") Read (@"golang.org/x/crypto/openpgp/armor".pÂ·4 []byte) (@"golang.org/x/crypto/openpgp/armor".nÂ·1 int, @"golang.org/x/crypto/openpgp/armor".errÂ·2 error)
+	type @"golang.org/x/crypto/openpgp/armor".Block struct { Type string; Header map[string]string; Body @"io".Reader; @"golang.org/x/crypto/openpgp/armor".lReader @"golang.org/x/crypto/openpgp/armor".lineReader; @"golang.org/x/crypto/openpgp/armor".oReader @"golang.org/x/crypto/openpgp/armor".openpgpReader }
+	type @"".Block struct { Headers @"net/textproto".MIMEHeader; Plaintext []byte; Bytes []byte; ArmoredSignature *@"golang.org/x/crypto/openpgp/armor".Block }
+	func @"".Decode (@"".dataÂ·3 []byte) (@"".bÂ·1 *@"".Block, @"".restÂ·2 []byte)
+	type @"io".WriteCloser interface { Close() (? error); Write(@"io".p []byte) (@"io".n int, @"io".err error) }
+	import time "time" // indirect
+	type @"time".zone struct { @"time".name string; @"time".offset int; @"time".isDST bool }
+	type @"time".zoneTrans struct { @"time".when int64; @"time".index uint8; @"time".isstd bool; @"time".isutc bool }
+	type @"time".Location struct { @"time".name string; @"time".zone []@"time".zone; @"time".tx []@"time".zoneTrans; @"time".cacheStart int64; @"time".cacheEnd int64; @"time".cacheZone *@"time".zone }
+	func (@"time".lÂ·2 *@"time".Location "esc:0x22") String () (? string)
+	func (@"time".lÂ·2 *@"time".Location "esc:0x1") @"time".firstZoneUsed () (? bool)
+	func (@"time".lÂ·2 *@"time".Location "esc:0x12") @"time".get () (? *@"time".Location)
+	func (@"time".lÂ·6 *@"time".Location "esc:0x32") @"time".lookup (@"time".secÂ·7 int64) (@"time".nameÂ·1 string, @"time".offsetÂ·2 int, @"time".isDSTÂ·3 bool, @"time".startÂ·4 int64, @"time".endÂ·5 int64)
+	func (@"time".lÂ·2 *@"time".Location "esc:0x1") @"time".lookupFirstZone () (? int)
+	func (@"time".lÂ·4 *@"time".Location "esc:0x1") @"time".lookupName (@"time".nameÂ·5 string "esc:0x1", @"time".unixÂ·6 int64) (@"time".offsetÂ·1 int, @"time".isDSTÂ·2 bool, @"time".okÂ·3 bool)
+	type @"time".Duration int64
+	func (@"time".dÂ·2 @"time".Duration) Hours () (? float64) { var @"time".hourÂ·3 @"time".Duration; ; @"time".hourÂ·3 = @"time".dÂ·2 / @"time".Duration(0x34630b8a000); var @"time".nsecÂ·4 @"time".Duration; ; @"time".nsecÂ·4 = @"time".dÂ·2 % @"time".Duration(0x34630b8a000); return float64(@"time".hourÂ·3) + float64(@"time".nsecÂ·4) * 8190022623310637111963488201822504381538623676021880892417778544696899264837610290203272971060556344039023584360473938041055625214280336402169897364226048p-553 }
+	func (@"time".dÂ·2 @"time".Duration) Minutes () (? float64) { var @"time".minÂ·3 @"time".Duration; ; @"time".minÂ·3 = @"time".dÂ·2 / @"time".Duration(0xdf8475800); var @"time".nsecÂ·4 @"time".Duration; ; @"time".nsecÂ·4 = @"time".dÂ·2 % @"time".Duration(0xdf8475800); return float64(@"time".minÂ·3) + float64(@"time".nsecÂ·4) * 7678146209353722106395056769533233877065564876941352542109479049699919628723768656821910653339403201031675627614471533358284117434246264392176261853609984p-547 }
+	func (@"time".dÂ·2 @"time".Duration) Nanoseconds () (? int64) { return int64(@"time".dÂ·2) }
+	func (@"time".dÂ·2 @"time".Duration) Seconds () (? float64) { var @"time".secÂ·3 @"time".Duration; ; @"time".secÂ·3 = @"time".dÂ·2 / @"time".Duration(0x3b9aca00); var @"time".nsecÂ·4 @"time".Duration; ; @"time".nsecÂ·4 = @"time".dÂ·2 % @"time".Duration(0x3b9aca00); return float64(@"time".secÂ·3) + float64(@"time".nsecÂ·4) * 7198262071269114660816079141112770740375861891461678802759824945047098083990024106014198994535558872472104883612039846078596891298747423852523262413111296p-541 }
+	func (@"time".dÂ·2 @"time".Duration) String () (? string)
+	type @"time".Month int
+	func (@"time".mÂ·2 @"time".Month) String () (? string) { return @"time".months[@"time".mÂ·2 - @"time".Month(0x1)] }
+	type @"time".Weekday int
+	func (@"time".dÂ·2 @"time".Weekday) String () (? string) { return @"time".days[@"time".dÂ·2] }
+	type @"time".Time struct { @"time".sec int64; @"time".nsec int32; @"time".loc *@"time".Location }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Add (@"time".dÂ·3 @"time".Duration) (? @"time".Time) { @"time".tÂ·2.@"time".sec += int64(@"time".dÂ·3 / @"time".Duration(0x3b9aca00)); var @"time".nsecÂ·4 int32; ; @"time".nsecÂ·4 = int32(@"time".tÂ·2.@"time".nsec) + int32(@"time".dÂ·3 % @"time".Duration(0x3b9aca00)); if @"time".nsecÂ·4 >= 0x3b9aca00 { @"time".tÂ·2.@"time".sec++; @"time".nsecÂ·4 -= 0x3b9aca00 } else { if @"time".nsecÂ·4 < 0x0 { @"time".tÂ·2.@"time".sec--; @"time".nsecÂ·4 += 0x3b9aca00 } }; @"time".tÂ·2.@"time".nsec = @"time".nsecÂ·4; return @"time".tÂ·2 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") AddDate (@"time".yearsÂ·3 int, @"time".monthsÂ·4 int, @"time".daysÂ·5 int) (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") After (@"time".uÂ·3 @"time".Time "esc:0x1") (? bool) { return @"time".tÂ·2.@"time".sec > @"time".uÂ·3.@"time".sec || @"time".tÂ·2.@"time".sec == @"time".uÂ·3.@"time".sec && @"time".tÂ·2.@"time".nsec > @"time".uÂ·3.@"time".nsec }
+	func (@"time".tÂ·2 @"time".Time "esc:0x9") AppendFormat (@"time".bÂ·3 []byte "esc:0x1a", @"time".layoutÂ·4 string "esc:0x9") (? []byte)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Before (@"time".uÂ·3 @"time".Time "esc:0x1") (? bool) { return @"time".tÂ·2.@"time".sec < @"time".uÂ·3.@"time".sec || @"time".tÂ·2.@"time".sec == @"time".uÂ·3.@"time".sec && @"time".tÂ·2.@"time".nsec < @"time".uÂ·3.@"time".nsec }
+	func (@"time".tÂ·4 @"time".Time "esc:0x1") Clock () (@"time".hourÂ·1 int, @"time".minÂ·2 int, @"time".secÂ·3 int)
+	func (@"time".tÂ·4 @"time".Time "esc:0x1") Date () (@"time".yearÂ·1 int, @"time".monthÂ·2 @"time".Month, @"time".dayÂ·3 int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Day () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Equal (@"time".uÂ·3 @"time".Time "esc:0x1") (? bool) { return @"time".tÂ·2.@"time".sec == @"time".uÂ·3.@"time".sec && @"time".tÂ·2.@"time".nsec == @"time".uÂ·3.@"time".nsec }
+	func (@"time".tÂ·2 @"time".Time "esc:0x9") Format (@"time".layoutÂ·3 string "esc:0x9") (? string)
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") GobDecode (@"time".dataÂ·3 []byte "esc:0x1") (? error)
+	func (@"time".tÂ·3 @"time".Time "esc:0x1") GobEncode () (? []byte, ? error)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Hour () (? int)
+	func (@"time".tÂ·3 @"time".Time "esc:0x1") ISOWeek () (@"time".yearÂ·1 int, @"time".weekÂ·2 int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") In (@"time".locÂ·3 *@"time".Location "esc:0x12") (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") IsZero () (? bool) { return @"time".tÂ·2.@"time".sec == 0x0 && @"time".tÂ·2.@"time".nsec == 0x0 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Local () (? @"time".Time) { @"time".tÂ·2.@"time".loc = @"time".Local; return @"time".tÂ·2 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Location () (? *@"time".Location) { var @"time".lÂ·3 *@"time".Location; ; @"time".lÂ·3 = @"time".tÂ·2.@"time".loc; if @"time".lÂ·3 == nil { @"time".lÂ·3 = @"time".UTC }; return @"time".lÂ·3 }
+	func (@"time".tÂ·3 @"time".Time "esc:0x1") MarshalBinary () (? []byte, ? error)
+	func (@"time".tÂ·3 @"time".Time "esc:0x9") MarshalJSON () (? []byte, ? error)
+	func (@"time".tÂ·3 @"time".Time "esc:0x9") MarshalText () (? []byte, ? error)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Minute () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Month () (? @"time".Month)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Nanosecond () (? int) { return int(@"time".tÂ·2.@"time".nsec) }
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Round (@"time".dÂ·3 @"time".Duration) (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Second () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x9") String () (? string)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Sub (@"time".uÂ·3 @"time".Time "esc:0x1") (? @"time".Duration)
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") Truncate (@"time".dÂ·3 @"time".Duration) (? @"time".Time)
+	func (@"time".tÂ·2 @"time".Time "esc:0x12") UTC () (? @"time".Time) { @"time".tÂ·2.@"time".loc = @"time".UTC; return @"time".tÂ·2 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Unix () (? int64) { return @"time".tÂ·2.@"time".sec + -0xe7791f700 }
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") UnixNano () (? int64) { return (@"time".tÂ·2.@"time".sec + -0xe7791f700) * 0x3b9aca00 + int64(@"time".tÂ·2.@"time".nsec) }
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") UnmarshalBinary (@"time".dataÂ·3 []byte "esc:0x1") (? error)
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") UnmarshalJSON (@"time".dataÂ·3 []byte "esc:0x1") (@"time".errÂ·1 error)
+	func (@"time".tÂ·2 *@"time".Time "esc:0x1") UnmarshalText (@"time".dataÂ·3 []byte "esc:0x1") (@"time".errÂ·1 error)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Weekday () (? @"time".Weekday)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") Year () (? int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") YearDay () (? int)
+	func (@"time".tÂ·3 @"time".Time "esc:0x32") Zone () (@"time".nameÂ·1 string, @"time".offsetÂ·2 int)
+	func (@"time".tÂ·2 @"time".Time "esc:0x1") @"time".abs () (? uint64)
+	func (@"time".tÂ·5 @"time".Time "esc:0x1") @"time".date (@"time".fullÂ·6 bool) (@"time".yearÂ·1 int, @"time".monthÂ·2 @"time".Month, @"time".dayÂ·3 int, @"time".ydayÂ·4 int)
+	func (@"time".tÂ·4 @"time".Time "esc:0x32") @"time".locabs () (@"time".nameÂ·1 string, @"time".offsetÂ·2 int, @"time".absÂ·3 uint64)
+	type @"golang.org/x/crypto/openpgp/packet".PublicKeyAlgorithm uint8
+	func (@"golang.org/x/crypto/openpgp/packet".pkaÂ·2 @"golang.org/x/crypto/openpgp/packet".PublicKeyAlgorithm) CanEncrypt () (? bool)
+	func (@"golang.org/x/crypto/openpgp/packet".pkaÂ·2 @"golang.org/x/crypto/openpgp/packet".PublicKeyAlgorithm) CanSign () (? bool)
+	type @"golang.org/x/crypto/openpgp/packet".parsedMPI struct { @"golang.org/x/crypto/openpgp/packet".bytes []byte; @"golang.org/x/crypto/openpgp/packet".bitLength uint16 }
+	import ecdsa "crypto/ecdsa" // indirect
+	import elliptic "crypto/elliptic" // indirect
+	import big "math/big" // indirect
+	type @"math/big".Word uintptr
+	type @"math/big".divisor struct { @"math/big".bbb @"math/big".nat; @"math/big".nbits int; @"math/big".ndigits int }
+	import rand "math/rand" // indirect
+	type @"math/rand".Source interface { Int63() (? int64); Seed(@"math/rand".seed int64) }
+	type @"math/rand".Rand struct { @"math/rand".src @"math/rand".Source }
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") ExpFloat64 () (? float64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Float32 () (? float32)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Float64 () (? float64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int () (? int)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int31 () (? int32)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int31n (@"math/rand".nÂ·3 int32) (? int32)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int63 () (? int64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Int63n (@"math/rand".nÂ·3 int64) (? int64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Intn (@"math/rand".nÂ·3 int) (? int)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") NormFloat64 () (? float64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Perm (@"math/rand".nÂ·3 int) (? []int)
+	func (@"math/rand".rÂ·1 *@"math/rand".Rand "esc:0x9") Seed (@"math/rand".seedÂ·2 int64)
+	func (@"math/rand".rÂ·2 *@"math/rand".Rand "esc:0x9") Uint32 () (? uint32)
+	type @"io".ByteScanner interface { ReadByte() (@"io".c byte, @"io".err error); UnreadByte() (? error) }
+	type @"math/big".nat []@"math/big".Word
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".add (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".and (@"math/big".xÂ·3 @"math/big".nat "esc:0x1", @"math/big".yÂ·4 @"math/big".nat "esc:0x1") (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".andNot (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".yÂ·4 @"math/big".nat "esc:0x1") (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".bit (@"math/big".iÂ·3 uint) (? uint) { var @"math/big".jÂ·4 uint; ; @"math/big".jÂ·4 = @"math/big".iÂ·3 / 0x40; if @"math/big".jÂ·4 >= uint(len(@"math/big".xÂ·2)) { return 0x0 }; return uint(@"math/big".xÂ·2[@"math/big".jÂ·4] >> (@"math/big".iÂ·3 % 0x40) & @"math/big".Word(0x1)) }
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".bitLen () (? int)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x1") @"math/big".bytes (@"math/big".bufÂ·3 []byte "esc:0x1") (@"math/big".iÂ·1 int)
+	func (@"math/big".zÂ·1 @"math/big".nat "esc:0x1") @"math/big".clear ()
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".cmp (@"math/big".yÂ·3 @"math/big".nat "esc:0x1") (@"math/big".rÂ·1 int)
+	func (@"math/big".qÂ·1 @"math/big".nat) @"math/big".convertWords (@"math/big".sÂ·2 []byte "esc:0x1", @"math/big".charsetÂ·3 string "esc:0x1", @"math/big".bÂ·4 @"math/big".Word, @"math/big".ndigitsÂ·5 int, @"math/big".bbÂ·6 @"math/big".Word, @"math/big".tableÂ·7 []@"math/big".divisor "esc:0x9")
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x9") @"math/big".decimalString () (? string)
+	func (@"math/big".zÂ·3 @"math/big".nat) @"math/big".div (@"math/big".z2Â·4 @"math/big".nat, @"math/big".uÂ·5 @"math/big".nat, @"math/big".vÂ·6 @"math/big".nat) (@"math/big".qÂ·1 @"math/big".nat, @"math/big".rÂ·2 @"math/big".nat)
+	func (@"math/big".zÂ·3 @"math/big".nat "esc:0x12") @"math/big".divLarge (@"math/big".uÂ·4 @"math/big".nat, @"math/big".uInÂ·5 @"math/big".nat, @"math/big".vÂ·6 @"math/big".nat) (@"math/big".qÂ·1 @"math/big".nat, @"math/big".rÂ·2 @"math/big".nat)
+	func (@"math/big".zÂ·3 @"math/big".nat) @"math/big".divW (@"math/big".xÂ·4 @"math/big".nat, @"math/big".yÂ·5 @"math/big".Word) (@"math/big".qÂ·1 @"math/big".nat, @"math/big".rÂ·2 @"math/big".Word)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expNN (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expNNMontgomery (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expNNWindowed (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".expWW (@"math/big".xÂ·3 @"math/big".Word, @"math/big".yÂ·4 @"math/big".Word) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x9") @"math/big".hexString () (? string)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".make (@"math/big".nÂ·3 int) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat) @"math/big".modW (@"math/big".dÂ·3 @"math/big".Word) (@"math/big".rÂ·1 @"math/big".Word)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".montgomery (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat "esc:0x1", @"math/big".mÂ·5 @"math/big".nat, @"math/big".kÂ·6 @"math/big".Word, @"math/big".nÂ·7 int) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".mul (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".mulAddWW (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".Word, @"math/big".rÂ·5 @"math/big".Word) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".mulRange (@"math/big".aÂ·3 uint64, @"math/big".bÂ·4 uint64) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".norm () (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".or (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".yÂ·4 @"math/big".nat "esc:0x9") (? @"math/big".nat)
+	func (@"math/big".nÂ·2 @"math/big".nat) @"math/big".probablyPrime (@"math/big".repsÂ·3 int) (? bool)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".random (@"math/big".randÂ·3 *@"math/rand".Rand "esc:0x9", @"math/big".limitÂ·4 @"math/big".nat "esc:0x1", @"math/big".nÂ·5 int) (? @"math/big".nat)
+	func (@"math/big".zÂ·5 @"math/big".nat) @"math/big".scan (@"math/big".rÂ·6 @"io".ByteScanner, @"math/big".baseÂ·7 int, @"math/big".fracOkÂ·8 bool) (@"math/big".resÂ·1 @"math/big".nat, @"math/big".bÂ·2 int, @"math/big".countÂ·3 int, @"math/big".errÂ·4 error)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".set (@"math/big".xÂ·3 @"math/big".nat "esc:0x9") (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setBit (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".iÂ·4 uint, @"math/big".bÂ·5 uint) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setBytes (@"math/big".bufÂ·3 []byte "esc:0x1") (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setUint64 (@"math/big".xÂ·3 uint64) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".setWord (@"math/big".xÂ·3 @"math/big".Word) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".shl (@"math/big".xÂ·3 @"math/big".nat, @"math/big".sÂ·4 uint) (? @"math/big".nat)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".shr (@"math/big".xÂ·3 @"math/big".nat, @"math/big".sÂ·4 uint) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".sticky (@"math/big".iÂ·3 uint) (? uint)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x9") @"math/big".string (@"math/big".charsetÂ·3 string "esc:0x1") (? string)
+	func (@"math/big".zÂ·2 @"math/big".nat) @"math/big".sub (@"math/big".xÂ·3 @"math/big".nat, @"math/big".yÂ·4 @"math/big".nat) (? @"math/big".nat)
+	func (@"math/big".xÂ·2 @"math/big".nat "esc:0x1") @"math/big".trailingZeroBits () (? uint)
+	func (@"math/big".zÂ·2 @"math/big".nat "esc:0x12") @"math/big".xor (@"math/big".xÂ·3 @"math/big".nat "esc:0x9", @"math/big".yÂ·4 @"math/big".nat "esc:0x9") (? @"math/big".nat)
+	import fmt "fmt" // indirect
+	type @"fmt".State interface { Flag(@"fmt".c int) (? bool); Precision() (@"fmt".prec int, @"fmt".ok bool); Width() (@"fmt".wid int, @"fmt".ok bool); Write(@"fmt".b []byte) (@"fmt".ret int, @"fmt".err error) }
+	type @"fmt".ScanState interface { Read(@"fmt".buf []byte) (@"fmt".n int, @"fmt".err error); ReadRune() (@"fmt".r rune, @"fmt".size int, @"fmt".err error); SkipSpace(); Token(@"fmt".skipSpace bool, @"fmt".f func(? rune) (? bool)) (@"fmt".token []byte, @"fmt".err error); UnreadRune() (? error); Width() (@"fmt".wid int, @"fmt".ok bool) }
+	type @"math/big".Int struct { @"math/big".neg bool; @"math/big".abs @"math/big".nat }
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Abs (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Add (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") And (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") AndNot (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Binomial (@"math/big".nÂ·3 int64, @"math/big".kÂ·4 int64) (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x9") Bit (@"math/big".iÂ·3 int) (? uint)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") BitLen () (? int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x22") Bits () (? []@"math/big".Word) { return @"math/big".xÂ·2.@"math/big".abs }
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Bytes () (? []byte)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Cmp (@"math/big".yÂ·3 *@"math/big".Int "esc:0x1") (@"math/big".rÂ·1 int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Div (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x1a") DivMod (@"math/big".xÂ·4 *@"math/big".Int "esc:0x9", @"math/big".yÂ·5 *@"math/big".Int "esc:0x9", @"math/big".mÂ·6 *@"math/big".Int "esc:0x8a") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Exp (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x1", @"math/big".mÂ·5 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".xÂ·1 *@"math/big".Int "esc:0x9") Format (@"math/big".sÂ·2 @"fmt".State, @"math/big".chÂ·3 rune)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") GCD (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9", @"math/big".aÂ·5 *@"math/big".Int "esc:0x9", @"math/big".bÂ·6 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") GobDecode (@"math/big".bufÂ·3 []byte "esc:0x1") (? error)
+	func (@"math/big".xÂ·3 *@"math/big".Int "esc:0x1") GobEncode () (? []byte, ? error)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Int64 () (? int64) { var @"math/big".vÂ·3 int64; ; @"math/big".vÂ·3 = int64(@"math/big".low64(@"math/big".xÂ·2.@"math/big".abs)); if @"math/big".xÂ·2.@"math/big".neg { @"math/big".vÂ·3 = -@"math/big".vÂ·3 }; return @"math/big".vÂ·3 }
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Lsh (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".nÂ·4 uint) (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x9") MarshalJSON () (? []byte, ? error)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x9") MarshalText () (@"math/big".textÂ·1 []byte, @"math/big".errÂ·2 error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Mod (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") ModInverse (@"math/big".gÂ·3 *@"math/big".Int "esc:0x9", @"math/big".nÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") ModSqrt (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".pÂ·4 *@"math/big".Int) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Mul (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") MulRange (@"math/big".aÂ·3 int64, @"math/big".bÂ·4 int64) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Neg (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Not (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Or (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x9") ProbablyPrime (@"math/big".nÂ·3 int) (? bool)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Quo (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x1a") QuoRem (@"math/big".xÂ·4 *@"math/big".Int "esc:0x9", @"math/big".yÂ·5 *@"math/big".Int "esc:0x9", @"math/big".rÂ·6 *@"math/big".Int "esc:0x8a") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Rand (@"math/big".rndÂ·3 *@"math/rand".Rand "esc:0x9", @"math/big".nÂ·4 *@"math/big".Int "esc:0x1") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Rem (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Rsh (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".nÂ·4 uint) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") Scan (@"math/big".sÂ·3 @"fmt".ScanState, @"math/big".chÂ·4 rune) (? error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Set (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetBit (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".iÂ·4 int, @"math/big".bÂ·5 uint) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x12") SetBits (@"math/big".absÂ·3 []@"math/big".Word) (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetBytes (@"math/big".bufÂ·3 []byte "esc:0x1") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetInt64 (@"math/big".xÂ·3 int64) (? *@"math/big".Int)
+	func (@"math/big".zÂ·3 *@"math/big".Int "esc:0x1a") SetString (@"math/big".sÂ·4 string, @"math/big".baseÂ·5 int) (? *@"math/big".Int, ? bool)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") SetUint64 (@"math/big".xÂ·3 uint64) (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Sign () (? int) { if len(@"math/big".xÂ·2.@"math/big".abs) == 0x0 { return 0x0 }; if @"math/big".xÂ·2.@"math/big".neg { return -0x1 }; return 0x1 }
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x9") String () (? string)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Sub (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".xÂ·2 *@"math/big".Int "esc:0x1") Uint64 () (? uint64) { return @"math/big".low64(@"math/big".xÂ·2.@"math/big".abs) }
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") UnmarshalJSON (@"math/big".textÂ·3 []byte) (? error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x9") UnmarshalText (@"math/big".textÂ·3 []byte) (? error)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") Xor (@"math/big".xÂ·3 *@"math/big".Int "esc:0x9", @"math/big".yÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·2 *@"math/big".Int "esc:0x1a") @"math/big".binaryGCD (@"math/big".aÂ·3 *@"math/big".Int "esc:0x9", @"math/big".bÂ·4 *@"math/big".Int "esc:0x9") (? *@"math/big".Int)
+	func (@"math/big".zÂ·4 *@"math/big".Int "esc:0x1a") @"math/big".scan (@"math/big".rÂ·5 @"io".ByteScanner, @"math/big".baseÂ·6 int) (? *@"math/big".Int, ? int, ? error)
+	type @"crypto/elliptic".CurveParams struct { P *@"math/big".Int; N *@"math/big".Int; B *@"math/big".Int; Gx *@"math/big".Int; Gy *@"math/big".Int; BitSize int; Name string }
+	func (@"crypto/elliptic".curveÂ·3 *@"crypto/elliptic".CurveParams "esc:0x9") Add (@"crypto/elliptic".x1Â·4 *@"math/big".Int "esc:0x9", @"crypto/elliptic".y1Â·5 *@"math/big".Int "esc:0x9", @"crypto/elliptic".x2Â·6 *@"math/big".Int "esc:0x9", @"crypto/elliptic".y2Â·7 *@"math/big".Int "esc:0x9") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"crypto/elliptic".curveÂ·3 *@"crypto/elliptic".CurveParams "esc:0x9") Double (@"crypto/elliptic".x1Â·4 *@"math/big".Int "esc:0x9", @"crypto/elliptic".y1Â·5 *@"math/big".Int "esc:0x9") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"crypto/elliptic".curveÂ·2 *@"crypto/elliptic".CurveParams "esc:0x9") IsOnCurve (@"crypto/elliptic".xÂ·3 *@"math/big".Int "esc:0x9", @"crypto/elliptic".yÂ·4 *@"math/big".Int "esc:0x9") (? bool)
+	func (@"crypto/elliptic".curveÂ·2 *@"crypto/elliptic".CurveParams "esc:0x12") Params () (? *@"crypto/elliptic".CurveParams) { return @"crypto/elliptic".curveÂ·2 }
+	func (@"crypto/elliptic".curveÂ·3 *@"crypto/elliptic".CurveParams "esc:0x9") ScalarBaseMult (@"crypto/elliptic".kÂ·4 []byte "esc:0x1") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"crypto/elliptic".curveÂ·3 *@"crypto/elliptic".CurveParams "esc:0x9") ScalarMult (@"crypto/elliptic".BxÂ·4 *@"math/big".Int "esc:0x9", @"crypto/elliptic".ByÂ·5 *@"math/big".Int "esc:0x9", @"crypto/elliptic".kÂ·6 []byte "esc:0x1") (? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"crypto/elliptic".curveÂ·4 *@"crypto/elliptic".CurveParams "esc:0x9") @"crypto/elliptic".addJacobian (@"crypto/elliptic".x1Â·5 *@"math/big".Int "esc:0x9", @"crypto/elliptic".y1Â·6 *@"math/big".Int "esc:0x9", @"crypto/elliptic".z1Â·7 *@"math/big".Int "esc:0x9", @"crypto/elliptic".x2Â·8 *@"math/big".Int "esc:0x9", @"crypto/elliptic".y2Â·9 *@"math/big".Int "esc:0x9", @"crypto/elliptic".z2Â·10 *@"math/big".Int "esc:0x9") (? *@"math/big".Int, ? *@"math/big".Int, ? *@"math/big".Int)
+	func (@"crypto/elliptic".curveÂ·3 *@"crypto/elliptic".CurveParams "esc:0x9") @"crypto/elliptic".affineFromJacobian (@"crypto/elliptic".xÂ·4 *@"math/big".Int "esc:0x9", @"crypto/elliptic".yÂ·5 *@"math/big".Int "esc:0x9", @"crypto/elliptic".zÂ·6 *@"math/big".Int "esc:0x9") (@"crypto/elliptic".xOutÂ·1 *@"math/big".Int, @"crypto/elliptic".yOutÂ·2 *@"math/big".Int)
+	func (@"crypto/elliptic".curveÂ·4 *@"crypto/elliptic".CurveParams "esc:0x9") @"crypto/elliptic".doubleJacobian (@"crypto/elliptic".xÂ·5 *@"math/big".Int "esc:0x9", @"crypto/elliptic".yÂ·6 *@"math/big".Int "esc:0x9", @"crypto/elliptic".zÂ·7 *@"math/big".Int "esc:0x9") (? *@"math/big".Int, ? *@"math/big".Int, ? *@"math/big".Int)
+	type @"crypto/elliptic".Curve interface { Add(@"crypto/elliptic".x1 *@"math/big".Int, @"crypto/elliptic".y1 *@"math/big".Int, @"crypto/elliptic".x2 *@"math/big".Int, @"crypto/elliptic".y2 *@"math/big".Int) (@"crypto/elliptic".x *@"math/big".Int, @"crypto/elliptic".y *@"math/big".Int); Double(@"crypto/elliptic".x1 *@"math/big".Int, @"crypto/elliptic".y1 *@"math/big".Int) (@"crypto/elliptic".x *@"math/big".Int, @"crypto/elliptic".y *@"math/big".Int); IsOnCurve(@"crypto/elliptic".x *@"math/big".Int, @"crypto/elliptic".y *@"math/big".Int) (? bool); Params() (? *@"crypto/elliptic".CurveParams); ScalarBaseMult(@"crypto/elliptic".k []byte) (@"crypto/elliptic".x *@"math/big".Int, @"crypto/elliptic".y *@"math/big".Int); ScalarMult(@"crypto/elliptic".x1 *@"math/big".Int, @"crypto/elliptic".y1 *@"math/big".Int, @"crypto/elliptic".k []byte) (@"crypto/elliptic".x *@"math/big".Int, @"crypto/elliptic".y *@"math/big".Int) }
+	type @"crypto/ecdsa".PublicKey struct { ? @"crypto/elliptic".Curve; X *@"math/big".Int; Y *@"math/big".Int }
+	type @"golang.org/x/crypto/openpgp/packet".ecdsaKey struct { @"golang.org/x/crypto/openpgp/packet".oid []byte; @"golang.org/x/crypto/openpgp/packet".p @"golang.org/x/crypto/openpgp/packet".parsedMPI }
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·2 *@"golang.org/x/crypto/openpgp/packet".ecdsaKey "esc:0x1") @"golang.org/x/crypto/openpgp/packet".byteLen () (? int)
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·3 *@"golang.org/x/crypto/openpgp/packet".ecdsaKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".newECDSA () (? *@"crypto/ecdsa".PublicKey, ? error)
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·2 *@"golang.org/x/crypto/openpgp/packet".ecdsaKey "esc:0x1") @"golang.org/x/crypto/openpgp/packet".parse (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·2 *@"golang.org/x/crypto/openpgp/packet".ecdsaKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".serialize (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	type @"golang.org/x/crypto/openpgp/packet".kdfHashFunction uint8
+	type @"golang.org/x/crypto/openpgp/packet".kdfAlgorithm uint8
+	type @"golang.org/x/crypto/openpgp/packet".ecdhKdf struct { KdfHash @"golang.org/x/crypto/openpgp/packet".kdfHashFunction; KdfAlgo @"golang.org/x/crypto/openpgp/packet".kdfAlgorithm }
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·2 *@"golang.org/x/crypto/openpgp/packet".ecdhKdf "esc:0x1") @"golang.org/x/crypto/openpgp/packet".byteLen () (? int)
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·2 *@"golang.org/x/crypto/openpgp/packet".ecdhKdf "esc:0x1") @"golang.org/x/crypto/openpgp/packet".parse (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".fÂ·2 *@"golang.org/x/crypto/openpgp/packet".ecdhKdf "esc:0x1") @"golang.org/x/crypto/openpgp/packet".serialize (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	type @"golang.org/x/crypto/openpgp/packet".SignatureType uint8
+	type @"hash".Hash interface { BlockSize() (? int); Reset(); Size() (? int); Sum(@"hash".b []byte) (? []byte); Write(@"io".p []byte) (@"io".n int, @"io".err error) }
+	type @"crypto".Hash uint
+	func (@"crypto".hÂ·2 @"crypto".Hash) Available () (? bool) { return @"crypto".hÂ·2 < @"crypto".Hash(0x10) && @"crypto".hashes[@"crypto".hÂ·2] != nil }
+	func (@"crypto".hÂ·2 @"crypto".Hash) HashFunc () (? @"crypto".Hash) { return @"crypto".hÂ·2 }
+	func (@"crypto".hÂ·2 @"crypto".Hash) New () (? @"hash".Hash)
+	func (@"crypto".hÂ·2 @"crypto".Hash) Size () (? int)
+	type @"golang.org/x/crypto/openpgp/packet".signatureSubpacketType uint8
+	type @"golang.org/x/crypto/openpgp/packet".outputSubpacket struct { @"golang.org/x/crypto/openpgp/packet".hashed bool; @"golang.org/x/crypto/openpgp/packet".subpacketType @"golang.org/x/crypto/openpgp/packet".signatureSubpacketType; @"golang.org/x/crypto/openpgp/packet".isCritical bool; @"golang.org/x/crypto/openpgp/packet".contents []byte }
+	import cipher "crypto/cipher" // indirect
+	type @"crypto/cipher".Block interface { BlockSize() (? int); Decrypt(@"crypto/cipher".dst []byte, @"crypto/cipher".src []byte); Encrypt(@"crypto/cipher".dst []byte, @"crypto/cipher".src []byte) }
+	type @"golang.org/x/crypto/openpgp/packet".CipherFunction uint8
+	func (@"golang.org/x/crypto/openpgp/packet".cipherÂ·2 @"golang.org/x/crypto/openpgp/packet".CipherFunction) KeySize () (? int)
+	func (@"golang.org/x/crypto/openpgp/packet".cipherÂ·2 @"golang.org/x/crypto/openpgp/packet".CipherFunction) @"golang.org/x/crypto/openpgp/packet".blockSize () (? int)
+	func (@"golang.org/x/crypto/openpgp/packet".cipherÂ·2 @"golang.org/x/crypto/openpgp/packet".CipherFunction) @"golang.org/x/crypto/openpgp/packet".new (@"golang.org/x/crypto/openpgp/packet".keyÂ·3 []byte) (@"golang.org/x/crypto/openpgp/packet".blockÂ·1 @"crypto/cipher".Block)
+	type @"golang.org/x/crypto/openpgp/packet".CompressionAlgo uint8
+	type @"golang.org/x/crypto/openpgp/packet".CompressionConfig struct { Level int }
+	type @"golang.org/x/crypto/openpgp/packet".Config struct { Rand @"io".Reader; DefaultHash @"crypto".Hash; DefaultCipher @"golang.org/x/crypto/openpgp/packet".CipherFunction; Time func() (? @"time".Time); DefaultCompressionAlgo @"golang.org/x/crypto/openpgp/packet".CompressionAlgo; CompressionConfig *@"golang.org/x/crypto/openpgp/packet".CompressionConfig; S2KCount int; RSABits int }
+	func (@"golang.org/x/crypto/openpgp/packet".cÂ·2 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x1") Cipher () (? @"golang.org/x/crypto/openpgp/packet".CipherFunction)
+	func (@"golang.org/x/crypto/openpgp/packet".cÂ·2 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x1") Compression () (? @"golang.org/x/crypto/openpgp/packet".CompressionAlgo)
+	func (@"golang.org/x/crypto/openpgp/packet".cÂ·2 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x1") Hash () (? @"crypto".Hash)
+	func (@"golang.org/x/crypto/openpgp/packet".cÂ·2 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x1") Now () (? @"time".Time)
+	func (@"golang.org/x/crypto/openpgp/packet".cÂ·2 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x1") PasswordHashIterations () (? int)
+	func (@"golang.org/x/crypto/openpgp/packet".cÂ·2 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x22") Random () (? @"io".Reader)
+	type @"golang.org/x/crypto/openpgp/packet".Signature struct { SigType @"golang.org/x/crypto/openpgp/packet".SignatureType; PubKeyAlgo @"golang.org/x/crypto/openpgp/packet".PublicKeyAlgorithm; Hash @"crypto".Hash; HashSuffix []byte; HashTag [2]byte; CreationTime @"time".Time; RSASignature @"golang.org/x/crypto/openpgp/packet".parsedMPI; DSASigR @"golang.org/x/crypto/openpgp/packet".parsedMPI; DSASigS @"golang.org/x/crypto/openpgp/packet".parsedMPI; ECDSASigR @"golang.org/x/crypto/openpgp/packet".parsedMPI; ECDSASigS @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".rawSubpackets []@"golang.org/x/crypto/openpgp/packet".outputSubpacket; SigLifetimeSecs *uint32; KeyLifetimeSecs *uint32; PreferredSymmetric []uint8; PreferredHash []uint8; PreferredCompression []uint8; IssuerKeyId *uint64; IsPrimaryId *bool; FlagsValid bool; FlagCertify bool; FlagSign bool; FlagEncryptCommunications bool; FlagEncryptStorage bool; RevocationReason *uint8; RevocationReasonText string; MDC bool; EmbeddedSignature *@"golang.org/x/crypto/openpgp/packet".Signature; @"golang.org/x/crypto/openpgp/packet".outSubpackets []@"golang.org/x/crypto/openpgp/packet".outputSubpacket }
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x1") KeyExpired (@"golang.org/x/crypto/openpgp/packet".currentTimeÂ·3 @"time".Time "esc:0x1") (? bool)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature) Serialize (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") Sign (@"golang.org/x/crypto/openpgp/packet".hÂ·3 @"hash".Hash, @"golang.org/x/crypto/openpgp/packet".privÂ·4 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9", @"golang.org/x/crypto/openpgp/packet".configÂ·5 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x9") (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") SignKey (@"golang.org/x/crypto/openpgp/packet".pubÂ·3 *@"golang.org/x/crypto/openpgp/packet".PublicKey, @"golang.org/x/crypto/openpgp/packet".privÂ·4 *@"golang.org/x/crypto/openpgp/packet".PrivateKey, @"golang.org/x/crypto/openpgp/packet".configÂ·5 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x9") (? error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") SignUserId (@"golang.org/x/crypto/openpgp/packet".idÂ·3 string "esc:0x1", @"golang.org/x/crypto/openpgp/packet".pubÂ·4 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9", @"golang.org/x/crypto/openpgp/packet".privÂ·5 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9", @"golang.org/x/crypto/openpgp/packet".configÂ·6 *@"golang.org/x/crypto/openpgp/packet".Config "esc:0x9") (? error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") @"golang.org/x/crypto/openpgp/packet".buildHashSuffix () (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") @"golang.org/x/crypto/openpgp/packet".buildSubpackets () (@"golang.org/x/crypto/openpgp/packet".subpacketsÂ·1 []@"golang.org/x/crypto/openpgp/packet".outputSubpacket)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".Signature) @"golang.org/x/crypto/openpgp/packet".parse (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·3 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") @"golang.org/x/crypto/openpgp/packet".signPrepareHash (@"golang.org/x/crypto/openpgp/packet".hÂ·4 @"hash".Hash) (@"golang.org/x/crypto/openpgp/packet".digestÂ·1 []byte, @"golang.org/x/crypto/openpgp/packet".errÂ·2 error)
+	type @"golang.org/x/crypto/openpgp/packet".SignatureV3 struct { SigType @"golang.org/x/crypto/openpgp/packet".SignatureType; CreationTime @"time".Time; IssuerKeyId uint64; PubKeyAlgo @"golang.org/x/crypto/openpgp/packet".PublicKeyAlgorithm; Hash @"crypto".Hash; HashTag [2]byte; RSASignature @"golang.org/x/crypto/openpgp/packet".parsedMPI; DSASigR @"golang.org/x/crypto/openpgp/packet".parsedMPI; DSASigS @"golang.org/x/crypto/openpgp/packet".parsedMPI }
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".SignatureV3 "esc:0x9") Serialize (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".sigÂ·2 *@"golang.org/x/crypto/openpgp/packet".SignatureV3) @"golang.org/x/crypto/openpgp/packet".parse (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	type @"golang.org/x/crypto/openpgp/packet".PublicKey struct { CreationTime @"time".Time; PubKeyAlgo @"golang.org/x/crypto/openpgp/packet".PublicKeyAlgorithm; PublicKey interface {}; Fingerprint [20]byte; KeyId uint64; IsSubkey bool; @"golang.org/x/crypto/openpgp/packet".n @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".e @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".p @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".q @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".g @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".y @"golang.org/x/crypto/openpgp/packet".parsedMPI; @"golang.org/x/crypto/openpgp/packet".ec *@"golang.org/x/crypto/openpgp/packet".ecdsaKey; @"golang.org/x/crypto/openpgp/packet".ecdh *@"golang.org/x/crypto/openpgp/packet".ecdhKdf }
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·3 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x1") BitLength () (@"golang.org/x/crypto/openpgp/packet".bitLengthÂ·1 uint16, @"golang.org/x/crypto/openpgp/packet".errÂ·2 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x1") CanSign () (? bool)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey) KeyIdShortString () (? string)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey) KeyIdString () (? string)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") Serialize (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·1 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x1") SerializeSignaturePrefix (@"golang.org/x/crypto/openpgp/packet".hÂ·2 @"io".Writer)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey) VerifyKeySignature (@"golang.org/x/crypto/openpgp/packet".signedÂ·3 *@"golang.org/x/crypto/openpgp/packet".PublicKey, @"golang.org/x/crypto/openpgp/packet".sigÂ·4 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") (? error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey) VerifyRevocationSignature (@"golang.org/x/crypto/openpgp/packet".sigÂ·3 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") VerifySignature (@"golang.org/x/crypto/openpgp/packet".signedÂ·3 @"hash".Hash, @"golang.org/x/crypto/openpgp/packet".sigÂ·4 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") VerifySignatureV3 (@"golang.org/x/crypto/openpgp/packet".signedÂ·3 @"hash".Hash, @"golang.org/x/crypto/openpgp/packet".sigÂ·4 *@"golang.org/x/crypto/openpgp/packet".SignatureV3 "esc:0x1") (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") VerifyUserIdSignature (@"golang.org/x/crypto/openpgp/packet".idÂ·3 string "esc:0x1", @"golang.org/x/crypto/openpgp/packet".pubÂ·4 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9", @"golang.org/x/crypto/openpgp/packet".sigÂ·5 *@"golang.org/x/crypto/openpgp/packet".Signature "esc:0x9") (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") VerifyUserIdSignatureV3 (@"golang.org/x/crypto/openpgp/packet".idÂ·3 string "esc:0x1", @"golang.org/x/crypto/openpgp/packet".pubÂ·4 *@"golang.org/x/crypto/openpgp/packet".PublicKey, @"golang.org/x/crypto/openpgp/packet".sigÂ·5 *@"golang.org/x/crypto/openpgp/packet".SignatureV3 "esc:0x1") (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".parse (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x1") @"golang.org/x/crypto/openpgp/packet".parseDSA (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x1") @"golang.org/x/crypto/openpgp/packet".parseElGamal (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x1") @"golang.org/x/crypto/openpgp/packet".parseRSA (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".serializeWithoutHeaders (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·1 *@"golang.org/x/crypto/openpgp/packet".PublicKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".setFingerPrintAndKeyId ()
+	type @"golang.org/x/crypto/openpgp/packet".PrivateKey struct { ? @"golang.org/x/crypto/openpgp/packet".PublicKey; Encrypted bool; @"golang.org/x/crypto/openpgp/packet".encryptedData []byte; @"golang.org/x/crypto/openpgp/packet".cipher @"golang.org/x/crypto/openpgp/packet".CipherFunction; @"golang.org/x/crypto/openpgp/packet".s2k func(@"golang.org/x/crypto/openpgp/packet".out []byte, @"golang.org/x/crypto/openpgp/packet".in []byte); PrivateKey interface {}; @"golang.org/x/crypto/openpgp/packet".sha1Checksum bool; @"golang.org/x/crypto/openpgp/packet".iv []byte }
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") Decrypt (@"golang.org/x/crypto/openpgp/packet".passphraseÂ·3 []byte) (? error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") Serialize (@"golang.org/x/crypto/openpgp/packet".wÂ·3 @"io".Writer) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".parse (@"golang.org/x/crypto/openpgp/packet".rÂ·3 @"io".Reader) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".parseDSAPrivateKey (@"golang.org/x/crypto/openpgp/packet".dataÂ·3 []byte) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".parseElGamalPrivateKey (@"golang.org/x/crypto/openpgp/packet".dataÂ·3 []byte) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".parsePrivateKey (@"golang.org/x/crypto/openpgp/packet".dataÂ·3 []byte) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func (@"golang.org/x/crypto/openpgp/packet".pkÂ·2 *@"golang.org/x/crypto/openpgp/packet".PrivateKey "esc:0x9") @"golang.org/x/crypto/openpgp/packet".parseRSAPrivateKey (@"golang.org/x/crypto/openpgp/packet".dataÂ·3 []byte) (@"golang.org/x/crypto/openpgp/packet".errÂ·1 error)
+	func @"".Encode (@"".wÂ·3 @"io".Writer, @"".privateKeyÂ·4 *@"golang.org/x/crypto/openpgp/packet".PrivateKey, @"".configÂ·5 *@"golang.org/x/crypto/openpgp/packet".Config) (@"".plaintextÂ·1 @"io".WriteCloser, @"".errÂ·2 error)
+	func @"".init ()
+	var @"bufio".ErrInvalidUnreadByte error
+	var @"bufio".ErrInvalidUnreadRune error
+	var @"time".months [12]string
+	var @"time".days [7]string
+	var @"time".Local *@"time".Location
+	var @"time".UTC *@"time".Location
+	func @"math/big".low64 (@"math/big".zÂ·2 @"math/big".nat "esc:0x1") (? uint64) { if len(@"math/big".zÂ·2) == 0x0 { return 0x0 }; var @"math/big".vÂ·3 uint64; ; @"math/big".vÂ·3 = uint64(@"math/big".zÂ·2[0x0]); if false && len(@"math/big".zÂ·2) > 0x1 { @"math/big".vÂ·3 |= uint64(@"math/big".zÂ·2[0x1]) << 0x20 }; return @"math/big".vÂ·3 }
+	var @"crypto".hashes []func() (? @"hash".Hash)
+
+$$
+_go_.o          0           0     0     644     44262     `
+go object windows amd64 go1.5.3 X:none
+
+!
+  go13ldbufio.abytes.acrypto.ahash.aio.anet/textproto.astrconv.aFgolang.org/x/crypto/openpgp/armor.aHgolang.org/x/crypto/openpgp/errors.aHgolang.org/x/crypto/openpgp/packet.a ş"".getLine  À  ¦eH‹%(   H‹‰    HD$ØH;A†ª  Hì¨   1ÛH‰œ$È   H‰œ$Ğ   H‰œ$Ø   1ÛH‰œ$à   H‰œ$è   H‰œ$ğ   1ÛH‰œ$à   H‰œ$è   H‰œ$ğ   1ÛH‰œ$È   H‰œ$Ğ   H‰œ$Ø   H\$?H‰\$XH‹\$XHƒû „  @Š-    @ˆ+H‹\$XHƒû „û  HÇD$h   HÇD$p   H‰\$`H‹œ$°   H‰$H‹œ$¸   H‰\$H‹œ$À   H‰\$H‹\$`H‰\$H‹\$hH‰\$ H‹\$pH‰\$(è    H‹\$0H‰\$HHÇD$@    H‹\$HHƒû   H‹œ$¸   H‰\$HH‹\$HH‰\$@H‹\$HH‹¬$À   H9ë‡×   L‹„$°   H‰œ$˜   H‰¬$    L‰„$   H‹\$@H‹¬$¸   L‹„$À   H9ë‡’   H)İI)ØL‹Œ$°   Iƒø tMH‰¬$€   L‰„$ˆ   L‰L$xH‹œ$   H‰œ$È   H‹œ$˜   H‰œ$Ğ   H‹œ$    H‰œ$Ø   H‹\$xH‰œ$à   H‹œ$€   H‰œ$è   H‹œ$ˆ   H‰œ$ğ   HÄ¨   Ãè    è    H‹\$HHƒÃH‰\$@H‹\$HHƒû ïşÿÿH‹l$HHƒíH‹œ$°   L‹„$¸   L9Ås,H+Š€û…ÂşÿÿH‹\$HH‰\$PH‹\$PHƒëH‰\$Hé¥şÿÿè    ‰éşıÿÿ‰éŞıÿÿè    é-ıÿÿ      Ô  """.statictmp_0005   ¸
+  bytes.Index   €	
+  $runtime.panicslice   	
+  $runtime.panicslice   ê
+
+  $runtime.panicindex   ”
+  0runtime.morestack_noctxt   Ğ  "".autotmp_0006 Ÿtype.*[1]uint8 "".autotmp_0004 type.[]uint8 "".autotmp_0003 _type.[]uint8 "".autotmp_0002 /type.[]uint8 "".autotmp_0001 ¯type.int "".autotmp_0000 Ñtype.[1]uint8 "".j Ïtype.int "".i ¿type.int "".rest `type.[]uint8 "".line 0type.[]uint8 "".data  type.[]uint8 &Ğ˜ÏĞ¡ à @rœ	
+ô	<  ›Å TgclocalsÂ·4d8bed7e4976e3d095a9230e496231af TgclocalsÂ·63ba92e6c81d2d7bf2207e4076c8b23c   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goş"".Decode  àW  ÊWeH‹%(   H‹‰    H„$¨ıÿÿH;A†¹  HìØ  HÇ„$ø      1ÛH‰œ$   H‰œ$  H‰œ$  1ÛH‰œ$   H‰œ$  H‰œ$  HÇ„$ø      H‹œ$à  H‰œ$   H‹œ$è  H‰œ$  H‹œ$ğ  H‰œ$  H‹    H‹-    Hƒû‚  HƒëHƒíL‹    Hƒı tIƒÀH‰œ$°  H‰¬$¸  L‰„$¨  H‹œ$à  H‰$H‹œ$è  H‰\$H‹œ$ğ  H‰\$H‹œ$¨  H‰\$H‹œ$°  H‰\$ H‹œ$¸  H‰\$(è    Š\$0ˆ\$O€|$O „U  H‹    H‰œ$ø   H‹œ$ø   HƒëH‰œ$ğ   H‹œ$ğ   H‹¬$  L‹„$  H9ë‡
+  H)İI)ØL‹Œ$   Iƒø tMH‰¬$  L‰„$  L‰Œ$   H‹œ$   H‰$H‹œ$  H‰\$H‹œ$  H‰\$è    H‹\$0H‰œ$   H‹\$8H‰œ$  H‹\$@H‰œ$  1ÛH‰œ$   H‰œ$¨  H‰œ$°  H    H‰$HÇD$    HÇD$    HÇD$    è    H‹\$ H‰œ$8  H    H‰$è    H‹\$H‰œ$(  H‹œ$(  Hƒû „   1íH‰+H‰kH‰kH‰kH‰k H‰k(H‰k0H‰k8H‹œ$(  Hƒû „Æ  H‹¬$8  €=     …›  H‰+H‹œ$(  H‰œ$ø  H‹œ$  H‰œ$Ø   H‹œ$Ø   Hƒû uDHÇ„$ø      H‹œ$à  H‰œ$   H‹œ$è  H‰œ$  H‹œ$ğ  H‰œ$  HÄØ  ÃH‹œ$   H‰$H‹œ$  H‰\$H‹œ$  H‰\$è    H‹\$H‰œ$   H‹\$ H‰œ$¨  H‹\$(H‰œ$°  H‹\$0H‰œ$   H‹\$8H‰œ$  H‹\$@H‰œ$  H‹œ$¨  H‰œ$Ğ   H‹œ$Ğ   Hƒû …ó  ÆD$KH‹œ$   H‰œ$ˆ  H‹œ$  H‰œ$  H‹œ$  H‰œ$˜  H‹œ$   H‰$H‹œ$  H‰\$H‹œ$  H‰\$è    H‹\$H‰œ$   H‹\$ H‰œ$¨  H‹\$(H‰œ$°  H‹\$0H‰œ$   H‹\$8H‰œ$  H‹\$@H‰œ$  H‹œ$   H‰$H‹œ$¨  H‰\$H‹œ$°  H‰\$H‹    H‰\$H‹    H‰\$ H‹    H‰\$(è    Š\$0ˆ\$M€|$M „ù  H‹œ$ˆ  H‰œ$   H‹œ$  H‰œ$  H‹œ$˜  H‰œ$  H‹œ$   H‰$H‹œ$  H‰\$H‹œ$  H‰\$H‹    H‰\$H‹    H‰\$ H‹    H‰\$(è    H‹\$0H‰\$XH‹\$XHƒûÿuDHÇ„$ø      H‹œ$à  H‰œ$   H‹œ$è  H‰œ$  H‹œ$ğ  H‰œ$  HÄØ  ÃH‹\$XH‰œ$À   H‹    H‰œ$¸   H‹œ$À   H‹¬$¸   HëH‰\$XH‹œ$  H‰œ$°   H‹\$XH‹¬$°   H9ë}tH‹œ$   H‹l$XL‹„$  L9Åƒ¦  H+Š€ûu H‹\$XH‰œ$¨   H‹œ$¨   HƒÃH‰\$Xë•H‹œ$   H‹l$XL‹„$  L9ÅƒV  H+Š€û
+uëµH‹\$XH‹¬$  H9ë‡,  L‹„$   H‰œ$È  H‰¬$Ğ  L‰„$À  H‹\$XH‹¬$  L‹„$  H9ë‡ç  H)İI)ØL‹Œ$   Iƒø tMH‰¬$  L‰„$  L‰Œ$   1ÛH‰œ$@  H‰œ$H  H‹œ$À  H‰$H‹œ$È  H‰\$H‹œ$Ğ  H‰\$è    H‹\$H‰œ$0  H‹    H‰œ$  H‹œ$  1íH9ë„  H‹œ$0  H‰œ$   H‹œ$   H‰œ$X  H‹œ$  H‰œ$P  H‹œ$P  H‰$H‹œ$X  H‰\$è    H‹\$H‰œ$  H‹\$H‰œ$@  H‹\$ H‰œ$H  H‹œ$ø  Hƒû „ƒ   H‹¬$  €=     u^H‰k8H‹œ$@  Hƒû tDHÇ„$ø      H‹œ$à  H‰œ$   H‹œ$è  H‰œ$  H‹œ$ğ  H‰œ$  HÄØ  ÃHÄØ  ÃLC8L‰$H‰l$è    ë’‰évÿÿÿH    H‰$H    H‰\$H    H‰\$è    H‹\$H‰œ$  éµşÿÿè    è    è    è    €|$K „  ÆD$K H‹œ$   H‰$H‹œ$¨  H‰\$H‹œ$°  H‰\$H‹    H‰\$H‹    H‰\$ H‹    H‰\$(è    Š\$0ˆ\$L€|$L tLH‹œ$¨  H‹¬$°  Hƒû‚  HƒëHƒíL‹„$   Hƒı tIƒÀH‰œ$¨  H‰¬$°  L‰„$   H‹œ$   H‰$H‹œ$¨  H‰\$H‹œ$°  H‰\$H    H‰\$HÇD$    è    H‹\$(H‰œ$   H‹\$0H‰œ$¨  H‹\$8H‰œ$°  H‹œ$ø  Hƒû „Ï  H‹k H‰¬$  H‹k(H‰¬$   H‹k0H‰¬$(  H‹œ$  H‰œ$   H‹œ$   H‰œ$  H‹œ$(  H‰œ$  H‹œ$  H‹¬$¨  HëH‹¬$  H)ëH‰œ$   H‹œ$   Hƒû ~kH    H‰$H‹œ$   H‰\$H‹œ$  H‰\$H‹œ$  H‰\$H‹œ$   H‰\$ è    H‹\$(H‰œ$   H‹\$0H‰œ$  H‹\$8H‰œ$  H‹œ$¨  H‰œ$ˆ   H‹œ$   H‹¬$   Hl H‰,$H‹œ$   H‰\$H‹œ$ˆ   H‰\$è    H‹œ$   H‹¬$¨  HëH‹¬$  H9ë‡i  H‰œ$  H‹œ$ø  Hƒû „H  H‹¬$  H‰k(H‹¬$  H‰k0H‹¬$   €=     …  H‰k H‹œ$ø  Hƒû „ç  H‹kH‰¬$è  H‹kH‰¬$ğ  H‹kH‰¬$ø  H‹œ$è  H‰œ$Ğ  H‹œ$ğ  H‰œ$Ø  H‹œ$ø  H‰œ$à  H‹œ$Ø  H‹¬$¨  HëH‹¬$à  H)ëH‰œ$€   H‹œ$€   Hƒû ~kH    H‰$H‹œ$Ğ  H‰\$H‹œ$Ø  H‰\$H‹œ$à  H‰\$H‹œ$€   H‰\$ è    H‹\$(H‰œ$Ğ  H‹\$0H‰œ$Ø  H‹\$8H‰œ$à  H‹œ$¨  H‰\$xH‹œ$ğ  H‹¬$Ğ  Hl H‰,$H‹œ$   H‰\$H‹\$xH‰\$è    H‹œ$ğ  H‹¬$¨  HëH‹¬$à  H9ë‡‡  H‰œ$Ø  H‹œ$ø  Hƒû „f  H‹¬$Ø  H‰kH‹¬$à  H‰kH‹¬$Ğ  €=     …"  H‰kH‹œ$ø  Hƒû „  H‹kH‰¬$  H‹kH‰l$pH‹kH‰l$hH‹l$pHƒÅL‹D$hL9Åw$H‰kH‹œ$  H‹l$pH+@Š-    @ˆ+éöÿÿH    H‰$H‹œ$  H‰\$H‹\$pH‰\$H‹\$hH‰\$H‰l$ è    H‹\$(H‰œ$  H‹\$0H‰\$pH‹\$8H‰\$hH‹œ$ø  Hƒû tGH‹l$pHƒÅH‰kH‹l$hH‰kH‹¬$  €=     u	H‰kéKÿÿÿLCL‰$H‰l$è    é4ÿÿÿ‰ëµ‰éôşÿÿLCL‰$H‰l$è    éËşÿÿ‰é“şÿÿè    ‰éıÿÿLC L‰$H‰l$è    ééüÿÿ‰é±üÿÿè    ‰é*ûÿÿè    H‹œ$ø  Hƒû „Á  H‹k H‰¬$H  H‹k(H‰¬$P  H‹k0H‰¬$X  H‹œ$H  H‰œ$0  H‹œ$P  H‰œ$8  H‹œ$X  H‰œ$@  H‹œ$8  H‹-    HëH‹¬$@  H)ëH‰œ$    H‹œ$    Hƒû ~kH    H‰$H‹œ$0  H‰\$H‹œ$8  H‰\$H‹œ$@  H‰\$H‹œ$    H‰\$ è    H‹\$(H‰œ$0  H‹\$0H‰œ$8  H‹\$8H‰œ$@  H‹    H‰œ$˜   H‹œ$P  H‹¬$0  Hl H‰,$H‹    H‰\$H‹œ$˜   H‰\$è    H‹œ$P  H‹-    HëH‹¬$@  H9ëwcH‰œ$8  H‹œ$ø  Hƒû tIH‹¬$8  H‰k(H‹¬$@  H‰k0H‹¬$0  €=     u	H‰k éOøÿÿLC L‰$H‰l$è    é8øÿÿ‰ë³è    ‰é8şÿÿH\$NH‰œ$   H‹œ$   Hƒû „r  @Š-    @ˆ+H‹œ$   Hƒû „O  HÇ„$h     HÇ„$p     H‰œ$`  H‹œ$   H‰$H‹œ$¨  H‰\$H‹œ$°  H‰\$H‹œ$`  H‰\$H‹œ$h  H‰\$ H‹œ$p  H‰\$(è    H‹\$0H‰\$PH‹\$PHƒûÿuDHÇ„$ø      H‹œ$à  H‰œ$   H‹œ$è  H‰œ$  H‹œ$ğ  H‰œ$  HÄØ  ÃH‹\$PH‹¬$°  H9ë‡g  L‹„$   H‰œ$˜  H‰¬$   L‰„$  H‹\$PHƒÃH‰œ$È   H‹œ$È   H‹¬$¨  L‹„$°  H9ë‡  H)İI)ØL‹Œ$   Iƒø tMH‰¬$€  L‰„$ˆ  L‰Œ$x  H‹œ$  H‰œ$¸  H‹œ$˜  H‰œ$À  H‹œ$   H‰œ$È  H‹œ$x  H‰œ$p  H‹œ$€  H‰œ$x  H‹œ$ˆ  H‰œ$€  H‹œ$¸  H‰$H‹œ$À  H‰\$H‹œ$È  H‰\$è    H‹\$H‰œ$¸  H‹\$ H‰œ$À  H‹\$(H‰œ$È  H‹œ$p  H‰$H‹œ$x  H‰\$H‹œ$€  H‰\$è    H‹\$H‰œ$p  H‹\$ H‰œ$x  H‹\$(H‰œ$€  HÇ$    H‹œ$¸  H‰\$H‹œ$À  H‰\$H‹œ$È  H‰\$è    H‹\$ H‰œ$`  H‹\$(H‰œ$h  HÇ$    H‹œ$p  H‰\$H‹œ$x  H‰\$H‹œ$€  H‰\$è    H\$ H|$H‰ŞH‹H‰H‹NH‰OH‹œ$ø  Hƒû t+H‹+H‰,$H‹œ$`  H‰\$H‹œ$h  H‰\$è    é˜îÿÿ‰ëÑè    è    ‰éªüÿÿ‰é‡üÿÿI‰ØL‰$H‰l$è    éRîÿÿ‰é3îÿÿ‰éùíÿÿè    H‹œ$à  H‰$H‹œ$è  H‰\$H‹œ$ğ  H‰\$H‹    H‰\$H‹    H‰\$ H‹    H‰\$(è    H‹\$0H‰\$`H‹\$`Hƒû Œ€   H‹    H‰œ$è   H‹\$`H‹¬$è   HëH‰œ$à   H‹œ$à   H‹¬$  L‹„$  H9ëw5H)İI)ØL‹Œ$   Iƒø tMH‰¬$  L‰„$  L‰Œ$   é>ìÿÿè    HÇ„$ø      H‹œ$à  H‰œ$   H‹œ$è  H‰œ$  H‹œ$ğ  H‰œ$  HÄØ  Ãè    è    éêÿÿ²      Ğ "".start   Ş  "".start     "".start   ø
+  bytes.HasPrefix   ¬ "".start   Ü
+  "".getLine   ì  :type.net/textproto.MIMEHeader   ´	
+  runtime.makemap   Ü	  type."".Block   î	
+  "runtime.newobject   ® 6runtime.writeBarrierEnabled   ü
+  "".getLine   œ
+  "".getLine   ’  "".endText   ª "".endText   Â  "".endText   Ö
+  bytes.Equal   ¶  "".end   Î "".end   æ  "".end   ú
+  bytes.Index   Ô "".end   Â
+  bytes.NewBuffer   ê  >go.itab.*bytes.Buffer.io.Reader   ¼
+  Pgolang.org/x/crypto/openpgp/armor.Decode   Ê  6runtime.writeBarrierEnabled   °"
+  .runtime.writebarrierptr   Ğ"  $type.*bytes.Buffer   æ"  type.io.Reader   ş"  >go.itab.*bytes.Buffer.io.Reader   ’#
+   runtime.typ2Itab   À#
+  $runtime.panicslice   Î#
+  $runtime.panicslice   Ü#
+  $runtime.panicindex   ê#
+  $runtime.panicindex   è$  "".dashEscape   €% "".dashEscape   ˜%  "".dashEscape   ¬%
+  bytes.HasPrefix   ¼'  go.string." \t"   â'
+  bytes.TrimRight   ò*  type.[]uint8   ì+
+  &runtime.growslice_n   Ê-
+  runtime.memmove   ’/ 6runtime.writeBarrierEnabled   ê1  type.[]uint8   ä2
+  &runtime.growslice_n   ¶4
+  runtime.memmove   ş5 6runtime.writeBarrierEnabled   Ò7  
+"".lf   ğ7  type.[]uint8   Î8
+  "runtime.growslice   ô9 6runtime.writeBarrierEnabled   °:
+  .runtime.writebarrierptr   ô:
+  .runtime.writebarrierptr   –;
+  $runtime.panicslice   Ì;
+  .runtime.writebarrierptr   î;
+  $runtime.panicslice   Š<
+  $runtime.panicslice   ø= "".crlf   Î>  type.[]uint8   È?
+  &runtime.growslice_n   ¤@ "".crlf   ô@  "".crlf   ¢A
+  runtime.memmove   ÀA "".crlf   ØB 6runtime.writeBarrierEnabled   ”C
+  .runtime.writebarrierptr   °C
+  $runtime.panicslice   D  """.statictmp_0029   œF
+  bytes.Index   ”L
+  bytes.TrimSpace   ¸M
+  bytes.TrimSpace   îN
+  2runtime.slicebytetostring   ŠP
+  2runtime.slicebytetostring   ¨Q
+  8net/textproto.MIMEHeader.Add   ÄQ
+  $runtime.panicslice   ÒQ
+  $runtime.panicslice   ”R
+  .runtime.writebarrierptr   ÄR
+  $runtime.panicslice   ¢S  "".start   ºS "".start   ÒS  "".start   æS
+  bytes.Index   ¦T "".start   ”V
+  $runtime.panicslice   ªW
+  $runtime.panicslice   ¸W
+  0runtime.morestack_noctxt   p°  f"".autotmp_0045 Ztype.*golang.org/x/crypto/openpgp/armor.Block "".autotmp_0044 ÿtype.*uint8 "".autotmp_0043 ¿	type.uintptr "".autotmp_0042 ¯	type.int "".autotmp_0041 type.[]uint8 "".autotmp_0040 ßtype.[]uint8 "".autotmp_0039 Ÿ	type.uintptr "".autotmp_0038 	type.int "".autotmp_0037 ¯type.[]uint8 "".autotmp_0036 ÿtype.[]uint8 "".autotmp_0035 ÿtype.uintptr "".autotmp_0034 ïtype.int "".autotmp_0033 Ïtype.[]uint8 "".autotmp_0032 Ÿtype.[]uint8 "".autotmp_0031 ïtype.string "".autotmp_0030 ïtype.*[1]uint8 "".autotmp_0028 ïtype.[]uint8 "".autotmp_0027 ßtype.*"".Block "".autotmp_0026 Ï$type.*bytes.Buffer "".autotmp_0025 ßtype.int "".autotmp_0024 Ïtype.int "".autotmp_0023 ¿type.int "".autotmp_0022 ¯type.int "".autotmp_0021 —
+type.bool "".autotmp_0020 •
+type.bool "".autotmp_0019 ¿type.[]uint8 "".autotmp_0018 Ÿtype.int "".autotmp_0017 type.[]uint8 "".autotmp_0016 “
+type.[1]uint8 "".autotmp_0015 type.int "".autotmp_0014 ÿtype.int "".autotmp_0013 ¿:type.net/textproto.MIMEHeader "".autotmp_0012 ïtype.int "".autotmp_0011 ßtype.int "".autotmp_0010 Ïtype.int "".autotmp_0009 ¿type.int "".autotmp_0008 ‘
+type.bool "".autotmp_0007 _type.[]uint8 "".err ¯type.error "".armored /type.[]uint8 "".i ÿ	type.int "".start Ÿtype.[]uint8 "".firstLine ™
+type.bool "".val Ïtype.[]uint8 "".key ¿type.[]uint8 "".i 
+type.int "".line ïtype.[]uint8 "".i ï	type.int "".rest @type.[]uint8 "".b 0type.*"".Block "".data  type.[]uint8 ^)°­¯°‚¯°§¯°¯°à¯°è¯° ğ+ Ş”u0®tR²D›0yb00YD4K+6NöD	A-
+^Lg¼¶b12·¬7·DøRRÑ 	htD	 ¼ »²l‡Ğ’›1v›	…oÍiŒq"ímy¶üR[NO(Q—g TgclocalsÂ·d11cb9c675c1f1d21c9a742116e68979 TgclocalsÂ·a4c4601d95bf70b9aa4473d9ea5e7fbd   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goş."".(*dashEscaper).Write  À%  °%eH‹%(   H‹‰    HD$€H;A†/	  Hì   HÇ„$(      1ÛH‰œ$0  H‰œ$8  1ÛH‰œ$0  H‰œ$8  HÇ„$(      H‹œ$  H‰œ$è   H‹œ$  H‰œ$ğ   H‹œ$   H‰œ$ø   HÇD$`    H‹œ$ğ   H‰\$XH‹œ$è   H‰\$xH‹\$`H‹l$XH9ë  H‹\$xHƒû „p  @Š+@ˆl$GŠ\$Gˆ\$FH‹œ$  Hƒû „G  H‹k@H‰¬$Ğ   H‹kHH‰¬$Ø   H‹kPH‰¬$à   H‹œ$Ğ   Hƒ¼$Ø    †  @Šl$F@ˆ+H‹¬$  Hƒı „ã  Š] €û „¥   H‹¬$  Hƒı „½  Š]!€û urH‹œ$  Hƒû „œ  H‹kH‰¬$À   H‹kH‰¬$È   H‹    H‰\$H‹    H‰\$H‹    H‰\$H‹œ$È   H‰$H‹œ$À   Hƒû „;  H‹[@ÿÓH‹œ$  Hƒû „  @µ @ˆk!Š\$F€û „â  Š\$F€û	„Õ  Š\$F€û„È  H‹¬$  Hƒı „®  Š] €û „•  Š\$F€û-…Ô  H‹œ$  Hƒû „»  H‹+H‰,$H‹    H‰\$H‹    H‰\$H‹    H‰\$è    H‹\$(H‰œ$0  H‹\$0H‰œ$8  H‹œ$0  Hƒû tHÄ   ÃH‹œ$  Hƒû „B  H‹kH‰¬$°   H‹kH‰¬$¸   H‹´$  Hƒş „  H^@H|$H‰ŞH‹H‰H‹NH‰OH‹NH‰OH‹œ$¸   H‰$H‹œ$°   Hƒû „Ê   H‹[@ÿÓH‹œ$  Hƒû „«   @µ @ˆk H‹œ$  Hƒû „‹   H‹+H‰,$Š\$Fˆ\$è    H‹\$H‰œ$0  H‹\$H‰œ$8  H‹œ$0  Hƒû tHÄ   ÃH‹\$xHƒÃH‰\$xH‹\$`HƒÃH‰\$`H‹\$`H‹l$XH9ëŒåüÿÿH‹œ$  H‰œ$(  HÄ   Ã‰énÿÿÿ‰éNÿÿÿ‰é/ÿÿÿ‰éèşÿÿ‰é·şÿÿ‰é>şÿÿŠ\$F€û
+„,ÿÿÿH‹œ$  Hƒû „   H‹kH‰¬$    H‹kH‰¬$¨   H‹´$  Hƒş tdH^@H|$H‰ŞH‹H‰H‹NH‰OH‹NH‰OH‹œ$¨   H‰$H‹œ$    Hƒû t$H‹[@ÿÓH‹œ$  Hƒû t@µ @ˆk é˜şÿÿ‰ëğ‰ëØ‰ë˜‰ékÿÿÿŠ\$F€û
+…™   H‹œ$  Hƒû „€   H‹k8HÇC0    H‹œ$  Hƒû tbH‹+H‰,$Š\$Fˆ\$è    H‹\$H‰œ$0  H‹\$H‰œ$8  H‹œ$0  Hƒû tHÄ   ÃH‹œ$  Hƒû t@µ@ˆk éDşÿÿ‰ëğ‰ëš‰éyÿÿÿH‹œ$  Hƒû „N  H‹k0H‰l$hH‹\$hHƒû "  H‹œ$  Hƒû „  H‹kH‰¬$   H‹kH‰¬$˜   H‹´$  Hƒş „ì  H^(H|$H‰ŞH‹H‰H‹NH‰OH‹NH‰OH‹œ$˜   H‰$H‹œ$   Hƒû „¥  H‹[@ÿÓH‹œ$  Hƒû „†  H‹+H‰,$H‹´$  Hƒş „f  H^(H|$H‰ŞH‹H‰H‹NH‰OH‹NH‰Oè    H‹\$(H‰œ$0  H‹\$0H‰œ$8  H‹œ$0  Hƒû tHÄ   ÃH‹œ$  Hƒû „ö   H‹k8HÇC0    H‹œ$  Hƒû „Ñ   H‹kH‰¬$€   H‹kH‰¬$ˆ   H‹´$  Hƒş „    H^@H|$H‰ŞH‹H‰H‹NH‰OH‹NH‰OH‹œ$ˆ   H‰$H‹œ$€   Hƒû t`H‹[@ÿÓH‹œ$  Hƒû tHH‹+H‰,$Š\$Fˆ\$è    H‹\$H‰œ$0  H‹\$H‰œ$8  H‹œ$0  Hƒû „üÿÿHÄ   Ã‰ë´‰ëœ‰éYÿÿÿ‰é(ÿÿÿ‰éÿÿÿ‰é“şÿÿ‰ésşÿÿ‰éTşÿÿ‰éşÿÿ‰éÜıÿÿ‰é«ıÿÿ‰E éJúÿÿH‹œ$  Hƒû „  H‹k(H‰l$pH‹k0H‰l$PH‹k8H‰l$HH‹l$PHƒÅL‹D$HL9Åw8H‰k0H‹\$pH‹l$PH+@Šl$F@ˆ+H‹œ$  Hƒû t@µ @ˆk éRûÿÿ‰ëğH    H‰$H‹\$pH‰\$H‹\$PH‰\$H‹\$HH‰\$H‰l$ è    H‹\$(H‰\$pH‹\$0H‰\$PH‹\$8H‰\$HH‹œ$  Hƒû tDH‹l$PHƒÅH‰k0H‹l$HH‰k8H‹l$p€=     u	H‰k(é@ÿÿÿLC(L‰$H‰l$è    é)ÿÿÿ‰ë¸‰éìşÿÿ‰éİøÿÿ‰é¾øÿÿ‰é]øÿÿ‰E é;øÿÿ‰E éøÿÿè    ‰é²÷ÿÿ‰é‰÷ÿÿè    é¨öÿÿ.      Â  "".crlf   Ú "".crlf   ò  "".crlf   È       Ú	  "".dashEscape   ò	 "".dashEscape   Š
+  "".dashEscape   
+
+  *bufio.(*Writer).Write   †       €
+  2bufio.(*Writer).WriteByte   Ô       Ä
+  2bufio.(*Writer).WriteByte   Ò       ò
+  *bufio.(*Writer).Write          Î
+  2bufio.(*Writer).WriteByte   Ò!  type.[]uint8   ª"
+  "runtime.growslice   Ä# 6runtime.writeBarrierEnabled   €$
+  .runtime.writebarrierptr   ô$
+  $runtime.panicindex   %
+  0runtime.morestack_noctxt   p€  "".autotmp_0056 ñtype.uint8 "".autotmp_0055 type.*uint8 "".autotmp_0054 Ïtype.int "".autotmp_0053 ¿type.int "".autotmp_0052 ¯type.int "".autotmp_0051 /type.[]uint8 "".b ótype.uint8 "".err Ptype.error "".n @type.int "".data type.[]uint8 "".d  (type.*"".dashEscaper `&€œÿ€ğÿ€Fÿ€Úÿ€Öÿ€ñÿ€Á à ’üb…Ur
+'j‚NI/ˆA
+zJab*‚z~NA	Z ®   äª†k:' TgclocalsÂ·f1a2a0b9a600bbf7fc57fe833d57c70b TgclocalsÂ·05163bfa7deb86452c1b4890a4848958   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goş."".(*dashEscaper).Close     ˜eH‹%(   H‹‰    HD$èH;A†c  Hì˜   1ÛH‰œ$¨   H‰œ$°   1ÛH‰œ$¨   H‰œ$°   H‹¬$    Hƒı „  Š] €û uXH‹œ$    Hƒû „ı  H‹+H‰,$Š    ˆ\$è    H‹\$H‰œ$¨   H‹\$H‰œ$°   H‹œ$¨   Hƒû tHÄ˜   ÃH    H‰$è    H‹\$H‰\$HH‹\$HHƒû „‡  ÆH‹\$HHƒû „n  L‹„$    Iƒø „T  M‹@XIƒø „>  AŠh@ˆkH‹\$HHƒû „   L‹„$    Iƒø „  I‹hH‰kH‹œ$    Hƒû „å  H‹k`H‰,$è    H‹\$H‰œ$€   ‹\$‰œ$ˆ   H‹\$H‰œ$   H‹\$HHƒû „  H‹¬$€   H‰k0‹¬$ˆ   ‰k8H‹¬$   €=     …[  H‰k@H‹\$HHƒû „A  L‹„$    Iƒø „'  I‹hXHƒı „  HƒÅH€=     …æ  H‰«X  H‹\$HH‰$H‹´$    Hƒş „½  H^H|$H‰ŞH‹H‰H‹NH‰OH‹œ$    Hƒû „Š  H‹kXH‰l$H‹œ$    Hƒû „h  H‹k`H‰l$ è    H‹\$(H‰œ$¨   H‹\$0H‰œ$°   H‹œ$¨   Hƒû tHÄ˜   ÃH‹    H‰\$XH‹\$X1íH9ë„×  H‹œ$    Hƒû „¾  H‹+H‰l$PH‹\$PH‰\$xH‹\$XH‰\$pH‹\$pH‰$H‹\$xH‰\$H    H‰\$HÇD$   HÇD$     è    H‹\$(H‰\$`H‹\$0H‰\$hH‹\$8H‰œ$¨   H‹\$@H‰œ$°   H‹œ$¨   Hƒû tHÄ˜   ÃH    H‰$H‹\$`H‰\$H‹\$hH‰\$è    H\$H|$H‰ŞH‹H‰H‹NH‰OH‹\$HH‰$è    H‹\$H‰œ$¨   H‹\$ H‰œ$°   H‹œ$¨   Hƒû tHÄ˜   ÃH‹\$hH‰$H‹\$`Hƒû „Œ   H‹[ ÿÓH‹\$H‰œ$¨   H‹\$H‰œ$°   H‹œ$¨   Hƒû tHÄ˜   ÃH‹œ$    Hƒû tDH‹+H‰,$è    H‹\$H‰œ$¨   H‹\$H‰œ$°   H‹œ$¨   Hƒû tHÄ˜   ÃHÄ˜   Ã‰ë¸‰émÿÿÿ‰é;şÿÿH    H‰$H    H‰\$H    H‰\$è    H‹\$H‰\$Xéòıÿÿ‰é‘ıÿÿ‰éoıÿÿ‰é<ıÿÿLƒX  L‰$H‰l$è    éıÿÿ‰E éçüÿÿA‰ éÑüÿÿ‰é¸üÿÿLC@L‰$H‰l$è    é’üÿÿ‰é\üÿÿ‰éüÿÿA‰ éòûÿÿ‰éÙûÿÿA‰ éºûÿÿA‰ é¤ûÿÿ‰é‹ûÿÿ‰érûÿÿ‰éüúÿÿ‰E éÚúÿÿè    étúÿÿ0      ş  
+"".lf   
+  2bufio.(*Writer).WriteByte   ş  btype.golang.org/x/crypto/openpgp/packet.Signature   
+  "runtime.newobject   Æ
+  `golang.org/x/crypto/openpgp/packet.(*Config).Now   ö 6runtime.writeBarrierEnabled   ş 6runtime.writeBarrierEnabled   ú	
+  hgolang.org/x/crypto/openpgp/packet.(*Signature).Sign   è
+  >go.itab.*bufio.Writer.io.Writer   ¢  2go.string."PGP SIGNATURE"   Ú
+  Pgolang.org/x/crypto/openpgp/armor.Encode   ğ  type.io.Writer   ª
+  runtime.convI2I   ü
+  rgolang.org/x/crypto/openpgp/packet.(*Signature).Serialize   œ       ¬
+  *bufio.(*Writer).Flush   Î  $type.*bufio.Writer   ä  type.io.Writer   ü  >go.itab.*bufio.Writer.io.Writer   
+   runtime.typ2Itab   ‚
+  .runtime.writebarrierptr   Ş
+  .runtime.writebarrierptr   †
+  0runtime.morestack_noctxt   0°  "".autotmp_0067 type.*uint8 "".autotmp_0066 /type.time.Time "".out o&type.io.WriteCloser "".sig Ÿdtype.*golang.org/x/crypto/openpgp/packet.Signature "".err type.error "".d  (type.*"".dashEscaper h&°•¯°ô¯°Ã¯°|¯°M¯°I¯°¯°ş  ¢JP7)‚G˜®uFB>	 ( ‡Û²)Q¹É TgclocalsÂ·197df35d123b8543b316c6de2f24053a TgclocalsÂ·23e8db5305a793cdb6e075cbfbacd0bc   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goş"".Encode   %  %eH‹%(   H‹‰    H„$8ÿÿÿH;A†#	  HìH  1ÛH‰œ$p  H‰œ$x  1ÛH‰œ$€  H‰œ$ˆ  1ÛH‰œ$€  H‰œ$ˆ  1ÛH‰œ$p  H‰œ$x  H‹¬$`  Hƒı „º  Š(  €û „­   H    H‰œ$  HÇ„$     H    H‰$H    H‰\$H    H‰\$Hœ$  H‰\$HÇD$     è    H‹\$(H‰œ$¸   H‹\$0H‰œ$À   1ÛH‰œ$p  H‰œ$x  H‹œ$¸   H‰œ$€  H‹œ$À   H‰œ$ˆ  HÄH  ÃH‹œ$h  H‰$è    H‹\$H‰\$@H‹\$@H‰$è    H‹\$H‰\$xH‹\$H‰œ$€   H‹œ$€   H‰\$HH‹\$HHƒû …  H‹\$@H‰$è    H‹\$H‰œ$ø   H‹\$H‰œ$   HÇ$    H    H‰\$HÇD$   H‹œ$ø   H‰\$H‹œ$   H‰\$ è    H‹\$(H‰œ$è   H‹\$0H‰œ$ğ   H    H‰$H    H‰\$H    H‰\$Hœ$è   H‰\$HÇD$     è    H‹\$(H‰œ$¨   H‹\$0H‰œ$°   1ÛH‰œ$p  H‰œ$x  H‹œ$¨   H‰œ$€  H‹œ$°   H‰œ$ˆ  HÄH  ÃH‹\$@H‰$è    Š\$ˆ\$?€|$? …  H‹\$@H‰$è    H‹\$H‰œ$Ø   H‹\$H‰œ$à   HÇ$    H    H‰\$HÇD$   H‹œ$Ø   H‰\$H‹œ$à   H‰\$ è    H‹\$(H‰œ$È   H‹\$0H‰œ$Ğ   H    H‰$H    H‰\$H    H‰\$Hœ$È   H‰\$HÇD$     è    H‹\$(H‰œ$˜   H‹\$0H‰œ$    1ÛH‰œ$p  H‰œ$x  H‹œ$˜   H‰œ$€  H‹œ$    H‰œ$ˆ  HÄH  ÃH‹\$@H‰$è    H‹\$H‰œ$ˆ   H‹\$H‰œ$   H‹œ$P  H‰$H‹œ$X  H‰\$è    H‹\$H‰\$PH‹    H‹-    Hƒû‚ò  HƒëHƒíL‹    Hƒı tIƒÀH‰œ$8  H‰¬$@  L‰„$0  H‹\$PH‰$H‹œ$0  H‰\$H‹œ$8  H‰\$H‹œ$@  H‰\$è    H‹\$(H‰œ$€  H‹\$0H‰œ$ˆ  H‹œ$€  Hƒû tHÄH  ÃH‹\$PH‰$Š    ˆ\$è    H‹\$H‰œ$€  H‹\$H‰œ$ˆ  H‹œ$€  Hƒû tHÄH  ÃH‹\$PH‰$H    H‰\$HÇD$   è    H‹\$ H‰œ$€  H‹\$(H‰œ$ˆ  H‹œ$€  Hƒû tHÄH  ÃH‹\$PH‰$H‹\$xH‰\$H‹œ$€   H‰\$è    H‹\$ H‰œ$€  H‹\$(H‰œ$ˆ  H‹œ$€  Hƒû tHÄH  ÃH‹\$PH‰$Š    ˆ\$è    H‹\$H‰œ$€  H‹\$H‰œ$ˆ  H‹œ$€  Hƒû tHÄH  ÃH‹\$PH‰$Š    ˆ\$è    H‹\$H‰œ$€  H‹\$H‰œ$ˆ  H‹œ$€  Hƒû tHÄH  ÃH    H‰$HÇD$   HÇD$   è    H‹\$H‰œ$  H‹\$ H‰œ$   H‹\$(H‰œ$(  H    H‰$è    H‹\$H‰\$hH‹|$hHƒÿ „c  1ÀHƒÇèè    H‹\$hHƒû „B  H‹l$P€=     …  H‰+H‹\$hHƒû „  H‹¬$ˆ   H‰kH‹¬$   €=     …É  H‰kH‹\$hHƒû „¯  H‹l$@H‰kH‹\$hHƒû „  @µ@ˆk H‹\$hHƒû „s  @µ@ˆk!H‹\$hHƒû „V  H‹¬$   H‰kHH‹¬$(  H‰kPH‹¬$  €=     …  H‰k@H‹\$hHƒû „ø   H‹¬$`  €=     …Ì   H‰kXH‹\$hHƒû „²   H‹¬$h  €=     …†   H‰k`H‹\$hH‰\$pH‹    H‰\$`H‹\$`1íH9ët,H‹\$pH‰\$XH‹\$XH‰œ$x  H‹\$`H‰œ$p  HÄH  ÃH    H‰$H    H‰\$H    H‰\$è    H‹\$H‰\$`ë LC`L‰$H‰l$è    égÿÿÿ‰éGÿÿÿLCXL‰$H‰l$è    é!ÿÿÿ‰éÿÿÿLC@L‰$H‰l$è    éÛşÿÿ‰é£şÿÿ‰é†şÿÿ‰éişÿÿ‰éJşÿÿLCL‰$H‰l$è    é$şÿÿ‰éøıÿÿI‰ØL‰$H‰l$è    éÓıÿÿ‰é·ıÿÿ‰é–ıÿÿè    ‰E é>÷ÿÿè    é±öÿÿx      ª  Hgo.string."signing key is encrypted"   à  xtype.golang.org/x/crypto/openpgp/errors.InvalidArgumentError   ö  type.error     Šgo.itab.golang.org/x/crypto/openpgp/errors.InvalidArgumentError.error   Î
+  runtime.convT2I   ˜
+  bgolang.org/x/crypto/openpgp/packet.(*Config).Hash   È
+  "".nameOfHash   Ê
+  strconv.Itoa   œ  >go.string."unknown hash type: "   ö
+  *runtime.concatstring2   ¸  ptype.golang.org/x/crypto/openpgp/errors.UnsupportedError   Î  type.error   æ  ‚go.itab.golang.org/x/crypto/openpgp/errors.UnsupportedError.error   ¦	
+  runtime.convT2I   ê
+
+  *crypto.Hash.Available   ¬
+  strconv.Itoa   ş  Fgo.string."unsupported hash type: "   Ø
+  *runtime.concatstring2   š  ptype.golang.org/x/crypto/openpgp/errors.UnsupportedError   °  type.error   È  ‚go.itab.golang.org/x/crypto/openpgp/errors.UnsupportedError.error   ˆ
+  runtime.convT2I   Ì
+  crypto.Hash.New   ¼
+  bufio.NewWriter   Ş "".start   ì  "".start     "".start   Ì
+  *bufio.(*Writer).Write   Ê  
+"".lf   Ü
+  2bufio.(*Writer).WriteByte   Ü  $go.string."Hash: "   ‚
+  6bufio.(*Writer).WriteString   ¬
+  6bufio.(*Writer).WriteString   ª  
+"".lf   ¼
+  2bufio.(*Writer).WriteByte   º  
+"".lf   Ì
+  2bufio.(*Writer).WriteByte   º  type.[]uint8   ğ
+  "runtime.makeslice   Ì  &type."".dashEscaper   Ş
+  "runtime.newobject   ¦
+¾  runtime.duffzero   Ú 6runtime.writeBarrierEnabled   À 6runtime.writeBarrierEnabled   È 6runtime.writeBarrierEnabled   ˜ 6runtime.writeBarrierEnabled   è 6runtime.writeBarrierEnabled       Lgo.itab.*"".dashEscaper.io.WriteCloser   ¨!  (type.*"".dashEscaper   ¾!  &type.io.WriteCloser   Ö!  Lgo.itab.*"".dashEscaper.io.WriteCloser   ê!
+   runtime.typ2Itab   ¦"
+  .runtime.writebarrierptr   â"
+  .runtime.writebarrierptr   #
+  .runtime.writebarrierptr   „$
+  .runtime.writebarrierptr   ¾$
+  .runtime.writebarrierptr   î$
+  $runtime.panicslice   Œ%
+  0runtime.morestack_noctxt   €  0"".autotmp_0084 Ïtype.*uint8 "".autotmp_0083 ¿(type.*"".dashEscaper "".autotmp_0082 ßtype.error "".autotmp_0081 ¿type.error "".autotmp_0080 Ÿtype.error "".autotmp_0079 ¯(type.*"".dashEscaper "".autotmp_0078 _type.[]uint8 "".autotmp_0077 /type.[]uint8 "".autotmp_0076 ÿptype.golang.org/x/crypto/openpgp/errors.UnsupportedError "".autotmp_0075 ßtype.string "".autotmp_0074 ‘type.bool "".autotmp_0073 ¿ptype.golang.org/x/crypto/openpgp/errors.UnsupportedError "".autotmp_0072 Ÿtype.string "".autotmp_0071 ÿtype.int "".autotmp_0070 xtype.golang.org/x/crypto/openpgp/errors.InvalidArgumentError "".buffered ï$type.*bufio.Writer "".h ÿtype.hash.Hash "".name Ÿtype.string "".hashType  type.crypto.Hash "".err `type.error "".plaintext @&type.io.WriteCloser "".config 0^type.*golang.org/x/crypto/openpgp/packet.Config "".privateKey  ftype.*golang.org/x/crypto/openpgp/packet.PrivateKey "".w  type.io.Writer )•ë°ıGRTGGöÿ Ğ ˜Öq!­%!((¦@KM@@IàF4š;! \ æeY®b!®
+b8ˆğâ7Æo TgclocalsÂ·8f582d5064d8022d9648707e0d09f5dd TgclocalsÂ·b2adabb11c8dbdfa14b53803b58eaa56   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goş"".nameOfHash  €  üHƒì1ÛH‰\$H‰\$ H‹\$H‰$H‹$Hƒûw}H‹$HƒûuH    H‰\$HÇD$    HƒÄÃH‹$HƒûuH    H‰\$HÇD$    HƒÄÃH‹$HƒûuH    H‰\$HÇD$    HƒÄÃ1ÛH‰\$H‰\$ HƒÄÃH‹$HƒûwHH‹$HƒûuH    H‰\$HÇD$    HƒÄÃH‹$Hƒûu·H    H‰\$HÇD$    HƒÄÃH‹$HƒûuH    H‰\$HÇD$    HƒÄÃH‹$Hƒû	…kÿÿÿH    H‰\$HÇD$ 	   HƒÄÃ`  go.string."MD5"   ¨   go.string."SHA1"   ğ  $go.string."SHA224"   î  $go.string."SHA256"   ¶  $go.string."SHA384"   ş  $go.string."SHA512"   Î  *go.string."RIPEMD160"   0  "".autotmp_0086  type.crypto.Hash "".~r1 type.string "".h   type.crypto.Hash FB##-##' À LÆ
+
+
+
+
+
+
+  TgclocalsÂ·790e5cc5051fc0affc980ade09e929ec TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goş"".init  €  øeH‹%(   H‹‰    H;av_Š    €û tŠ    €ûuÃè    Æ    è    è    è    è    è    è    è    è    è    è    Æ    Ãè    ë„"      0  "".initdoneÂ·   F  "".initdoneÂ·   \
+  "runtime.throwinit   l "".initdoneÂ·   x
+  bufio.init   ‚
+  bytes.init   Œ
+  crypto.init   –
+  hash.init    
+  io.init   ª
+  $net/textproto.init   ´
+  strconv.init   ¾
+  Lgolang.org/x/crypto/openpgp/armor.init   È
+  Ngolang.org/x/crypto/openpgp/errors.init   Ò
+  Ngolang.org/x/crypto/openpgp/packet.init   Ş "".initdoneÂ·   ì
+  0runtime.morestack_noctxt        € € 
+ê€ 
+ -S TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb TgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb   ´J:/WorkSpaces/GoTraining/GoTraining/src/golang.org/x/crypto/openpgp/clearsign/clearsign.goşTgclocalsÂ·63ba92e6c81d2d7bf2207e4076c8b23c      
+        şTgclocalsÂ·4d8bed7e4976e3d095a9230e496231af      	       ş0>go.itab.*bytes.Buffer.io.Reader     ş&go.string.hdr." \t"                       go.string." \t"   şgo.string." \t"    	  şTgclocalsÂ·a4c4601d95bf70b9aa4473d9ea5e7fbd à  à   ;                   €                                             @                       @                  	            $            @        €             şTgclocalsÂ·d11cb9c675c1f1d21c9a742116e68979 ¸  ¸                  	   	                                                 şTgclocalsÂ·05163bfa7deb86452c1b4890a4848958 0  0                    şTgclocalsÂ·f1a2a0b9a600bbf7fc57fe833d57c70b 0  0         c      c    ş0>go.itab.*bufio.Writer.io.Writer     ş:go.string.hdr."PGP SIGNATURE"                       2go.string."PGP SIGNATURE"   ş2go.string."PGP SIGNATURE"    PGP SIGNATURE  şTgclocalsÂ·23e8db5305a793cdb6e075cbfbacd0bc 0  0   
+                 şTgclocalsÂ·197df35d123b8543b316c6de2f24053a 0  0                   ş0Šgo.itab.golang.org/x/crypto/openpgp/errors.InvalidArgumentError.error     ş0‚go.itab.golang.org/x/crypto/openpgp/errors.UnsupportedError.error     ş0Lgo.itab.*"".dashEscaper.io.WriteCloser     şPgo.string.hdr."signing key is encrypted"                       Hgo.string."signing key is encrypted"   şHgo.string."signing key is encrypted" @  2signing key is encrypted  şFgo.string.hdr."unknown hash type: "                       >go.string."unknown hash type: "   ş>go.string."unknown hash type: " 0  (unknown hash type:   şNgo.string.hdr."unsupported hash type: "                       Fgo.string."unsupported hash type: "   şFgo.string."unsupported hash type: " 0  0unsupported hash type:   ş,go.string.hdr."Hash: "                       $go.string."Hash: "   ş$go.string."Hash: "   Hash:   şTgclocalsÂ·b2adabb11c8dbdfa14b53803b58eaa56 ˆ  ˆ            €             €     ¡       ˆ          şTgclocalsÂ·8f582d5064d8022d9648707e0d09f5dd ˆ  ˆ            ?      ?      ?   ?   ?   Ï   Ï   Ï   Ï   Ï   Ï    ş&go.string.hdr."MD5"                       go.string."MD5"   şgo.string."MD5"   MD5  ş(go.string.hdr."SHA1"                        go.string."SHA1"   ş go.string."SHA1"   
+SHA1  ş2go.string.hdr."RIPEMD160"             	          *go.string."RIPEMD160"   ş*go.string."RIPEMD160"    RIPEMD160  ş,go.string.hdr."SHA224"                       $go.string."SHA224"   ş$go.string."SHA224"   SHA224  ş,go.string.hdr."SHA256"                       $go.string."SHA256"   ş$go.string."SHA256"   SHA256  ş,go.string.hdr."SHA384"                       $go.string."SHA384"   ş$go.string."SHA384"   SHA384  ş,go.string.hdr."SHA512"                       $go.string."SHA512"   ş$go.string."SHA512"   SHA512  şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·790e5cc5051fc0affc980ade09e929ec              ş0""..gobytes.1 F  F
+-----BEGIN PGP SIGNED MESSAGE----- ş0""..gobytes.2   -  ş0""..gobytes.3 :  :-----BEGIN PGP SIGNATURE----- ş0""..gobytes.4 8  8
+-----END PGP SIGNATURE----- ş0""..gobytes.5   
+ şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           şTgclocalsÂ·33cdeccccebe80329f1fdbee7f5874cb           ş,"".start  0type.[]uint8 0        #       #          ""..gobytes.1   ş,"".dashEscape  0type.[]uint8 0                         ""..gobytes.2   ş,"".endText  0type.[]uint8 0                         ""..gobytes.3   ş,"".end  0type.[]uint8 0                         ""..gobytes.4   ş,"".crlf  0type.[]uint8 0                         ""..gobytes.5   ş0
+"".lf  type.uint8 
+ ş""".statictmp_0005  type.[1]uint8 
+ ş""".statictmp_0029  type.[1]uint8 : ş0"".initdoneÂ·  type.uint8   ş"".getLineÂ·f              "".getLine   ş"".DecodeÂ·f              "".Decode   ş4"".(*dashEscaper).WriteÂ·f              ."".(*dashEscaper).Write   ş4"".(*dashEscaper).CloseÂ·f              ."".(*dashEscaper).Close   ş"".EncodeÂ·f              "".Encode   ş "".nameOfHashÂ·f              "".nameOfHash   ş"".initÂ·f              "".init   ş"runtime.gcbits.01    ş.go.string.hdr."[]uint8"                       &go.string."[]uint8"   ş&go.string."[]uint8"   []uint8  ştype.[]uint8                   ß~.8                                                         0   runtime.algarray   @  "runtime.gcbits.01   P  .go.string.hdr."[]uint8"   p  *go.weak.type.*[]uint8   €  "runtime.zerovalue     type.uint8   ş6go.typelink.[]uint8	[]uint8              type.[]uint8   şruntime.gcbits.      ş0go.string.hdr."[1]uint8"                       (go.string."[1]uint8"   ş(go.string."[1]uint8"    [1]uint8  ştype.[1]uint8 À  À               16Ê ‘                                                                       0@  runtime.algarray   @  runtime.gcbits.   P  0go.string.hdr."[1]uint8"   p  ,go.weak.type.*[1]uint8   €  "runtime.zerovalue     type.uint8      type.[]uint8   ş:go.typelink.[1]uint8	[1]uint8              type.[1]uint8   ş2go.string.hdr."*[1]uint8"             	          *go.string."*[1]uint8"   ş*go.string."*[1]uint8"    *[1]uint8  ştype.*[1]uint8                   ±˜~[ 6                                                        0   runtime.algarray   @  "runtime.gcbits.01   P  2go.string.hdr."*[1]uint8"   p  .go.weak.type.**[1]uint8   €  "runtime.zerovalue     type.[1]uint8   ş@go.string.hdr."*clearsign.Block"                       8go.string."*clearsign.Block"   ş8go.string."*clearsign.Block" 0  "*clearsign.Block  ştype.*"".Block                    1¹÷ 6                                                        0   runtime.algarray   @  "runtime.gcbits.01   P  @go.string.hdr."*clearsign.Block"   p  .go.weak.type.**"".Block   €  "runtime.zerovalue     type."".Block   ş"runtime.gcbits.93   “ ş>go.string.hdr."clearsign.Block"                       6go.string."clearsign.Block"   ş6go.string."clearsign.Block"     clearsign.Block  ş.go.string.hdr."Headers"                       &go.string."Headers"   ş&go.string."Headers"   Headers  ş2go.string.hdr."Plaintext"             	          *go.string."Plaintext"   ş*go.string."Plaintext"    Plaintext  ş*go.string.hdr."Bytes"                       "go.string."Bytes"   ş"go.string."Bytes"   Bytes  ş@go.string.hdr."ArmoredSignature"                       8go.string."ArmoredSignature"   ş8go.string."ArmoredSignature" 0  "ArmoredSignature  ş*go.string.hdr."Block"                       "go.string."Block"   ş"go.string."Block"   Block  şjgo.string.hdr."golang.org/x/crypto/openpgp/clearsign"             %          bgo.string."golang.org/x/crypto/openpgp/clearsign"   şbgo.string."golang.org/x/crypto/openpgp/clearsign" P  Lgolang.org/x/crypto/openpgp/clearsign  ş"go.importpath."".             %          bgo.string."golang.org/x/crypto/openpgp/clearsign"   ştype."".Block  Ğ  Ğ@       @       å                                                                                                                                                                                                                              8                                               $0à  runtime.algarray   @  "runtime.gcbits.93   P  >go.string.hdr."clearsign.Block"   p  type.*"".Block   €  "runtime.zerovalue   À type."".Block   À  .go.string.hdr."Headers"   à  :type.net/textproto.MIMEHeader     2go.string.hdr."Plaintext"   °  type.[]uint8   à  *go.string.hdr."Bytes"   €  type.[]uint8   °  @go.string.hdr."ArmoredSignature"   Ğ  Ztype.*golang.org/x/crypto/openpgp/armor.Block   `€ type."".Block   €  *go.string.hdr."Block"     "go.importpath."".    Ğ type."".Block   ş&runtime.gcbits.2719   ' şJgo.string.hdr."clearsign.dashEscaper"                       Bgo.string."clearsign.dashEscaper"   şBgo.string."clearsign.dashEscaper" 0  ,clearsign.dashEscaper  ş0go.string.hdr."buffered"                       (go.string."buffered"   ş(go.string."buffered"    buffered  ş"go.string.hdr."h"                       go.string."h"   şgo.string."h"   h  ş0go.string.hdr."hashType"                       (go.string."hashType"   ş(go.string."hashType"    hashType  şBgo.string.hdr."atBeginningOfLine"                       :go.string."atBeginningOfLine"   ş:go.string."atBeginningOfLine" 0  $atBeginningOfLine  ş6go.string.hdr."isFirstLine"                       .go.string."isFirstLine"   ş.go.string."isFirstLine"    isFirstLine  ş4go.string.hdr."whitespace"             
+          ,go.string."whitespace"   ş,go.string."whitespace"    whitespace  ş.go.string.hdr."byteBuf"                       &go.string."byteBuf"   ş&go.string."byteBuf"   byteBuf  ş4go.string.hdr."privateKey"             
+          ,go.string."privateKey"   ş,go.string."privateKey"    privateKey  ş,go.string.hdr."config"                       $go.string."config"   ş$go.string."config"   config  ş6go.string.hdr."dashEscaper"                       .go.string."dashEscaper"   ş.go.string."dashEscaper"    dashEscaper  ş&type."".dashEscaper  à  àh       h       (ÒÁ                                                         	       	                                                                                                                                                                                                     !                                       (                                       @                                       X                                       `                                               J0à  runtime.algarray   @  &runtime.gcbits.2719   P  Jgo.string.hdr."clearsign.dashEscaper"   p  (type.*"".dashEscaper   €  "runtime.zerovalue   À &type."".dashEscaper   À  0go.string.hdr."buffered"   Ğ  "go.importpath."".   à  $type.*bufio.Writer     "go.string.hdr."h"      "go.importpath."".   °  type.hash.Hash   à  0go.string.hdr."hashType"   ğ  "go.importpath."".   €   type.crypto.Hash   °  Bgo.string.hdr."atBeginningOfLine"   À  "go.importpath."".   Ğ  type.bool   €  6go.string.hdr."isFirstLine"     "go.importpath."".      type.bool   Ğ  4go.string.hdr."whitespace"   à  "go.importpath."".   ğ  type.[]uint8      .go.string.hdr."byteBuf"   °  "go.importpath."".   À  type.[]uint8   ğ  4go.string.hdr."privateKey"   €  "go.importpath."".     ftype.*golang.org/x/crypto/openpgp/packet.PrivateKey   À  ,go.string.hdr."config"   Ğ  "go.importpath."".   à  ^type.*golang.org/x/crypto/openpgp/packet.Config   ` &type."".dashEscaper     6go.string.hdr."dashEscaper"      "go.importpath."".   °à &type."".dashEscaper   şLgo.string.hdr."*clearsign.dashEscaper"                       Dgo.string."*clearsign.dashEscaper"   şDgo.string."*clearsign.dashEscaper" 0  .*clearsign.dashEscaper  şdgo.string.hdr."func(*clearsign.dashEscaper) error"             "          \go.string."func(*clearsign.dashEscaper) error"   ş\go.string."func(*clearsign.dashEscaper) error" P  Ffunc(*clearsign.dashEscaper) error  ş@type.func(*"".dashEscaper) error                   «Qè 3                                                                                                                    0€  runtime.algarray   @  "runtime.gcbits.01   P  dgo.string.hdr."func(*clearsign.dashEscaper) error"   p  Rgo.weak.type.*func(*"".dashEscaper) error   €  "runtime.zerovalue    € @type.func(*"".dashEscaper) error   Ğ @type.func(*"".dashEscaper) error   €  (type.*"".dashEscaper     type.error   ş”go.typelink.func(*clearsign.dashEscaper) error	func(*"".dashEscaper) error              @type.func(*"".dashEscaper) error   ş„go.string.hdr."func(*clearsign.dashEscaper, []uint8) (int, error)"             2          |go.string."func(*clearsign.dashEscaper, []uint8) (int, error)"   ş|go.string."func(*clearsign.dashEscaper, []uint8) (int, error)" p  ffunc(*clearsign.dashEscaper, []uint8) (int, error)  ş`type.func(*"".dashEscaper, []uint8) (int, error) À  À              UBåf 3                                                                                                                                    0€  runtime.algarray   @  "runtime.gcbits.01   P  „go.string.hdr."func(*clearsign.dashEscaper, []uint8) (int, error)"   p  rgo.weak.type.*func(*"".dashEscaper, []uint8) (int, error)   €  "runtime.zerovalue    € `type.func(*"".dashEscaper, []uint8) (int, error)   Ğ  `type.func(*"".dashEscaper, []uint8) (int, error)   €  (type.*"".dashEscaper     type.[]uint8      type.int   °  type.error   şÔgo.typelink.func(*clearsign.dashEscaper, []uint8) (int, error)	func(*"".dashEscaper, []uint8) (int, error)              `type.func(*"".dashEscaper, []uint8) (int, error)   ş*go.string.hdr."Close"                       "go.string."Close"   ş"go.string."Close"   Close  ş8go.string.hdr."func() error"                       0go.string."func() error"   ş0go.string."func() error"    func() error  ş"type.func() error                 œ‚Öµ 3                                                                                                              0€  runtime.algarray   @  "runtime.gcbits.01   P  8go.string.hdr."func() error"   p  4go.weak.type.*func() error   €  "runtime.zerovalue    € "type.func() error   Ğ€ "type.func() error   €  type.error   şJgo.typelink.func() error	func() error              "type.func() error   ş*go.string.hdr."Write"                       "go.string."Write"   ş"go.string."Write"   Write  şTgo.string.hdr."func([]uint8) (int, error)"                       Lgo.string."func([]uint8) (int, error)"   şLgo.string."func([]uint8) (int, error)" @  6func([]uint8) (int, error)  ş>type.func([]uint8) (int, error) °  °              „N4P 3                                                                                                                            0€  runtime.algarray   @  "runtime.gcbits.01   P  Tgo.string.hdr."func([]uint8) (int, error)"   p  Pgo.weak.type.*func([]uint8) (int, error)   €  "runtime.zerovalue    € >type.func([]uint8) (int, error)   Ğ >type.func([]uint8) (int, error)   €  type.[]uint8     type.int      type.error   ş‚go.typelink.func([]uint8) (int, error)	func([]uint8) (int, error)              >type.func([]uint8) (int, error)   ş(type.*"".dashEscaper  °  °              Ró 6                                                                                                                                                                                              $0   runtime.algarray   @  "runtime.gcbits.01   P  Lgo.string.hdr."*clearsign.dashEscaper"   p  :go.weak.type.**"".dashEscaper   €  "runtime.zerovalue     &type."".dashEscaper   `  (type.*"".dashEscaper   Àğ (type.*"".dashEscaper   ğ  *go.string.hdr."Close"     "type.func() error      @type.func(*"".dashEscaper) error   °  ."".(*dashEscaper).Close   À  ."".(*dashEscaper).Close   Ğ  *go.string.hdr."Write"   ğ  >type.func([]uint8) (int, error)   €  `type.func(*"".dashEscaper, []uint8) (int, error)     ."".(*dashEscaper).Write      ."".(*dashEscaper).Write   ş.go.string.hdr."runtime"                       &go.string."runtime"   ş&go.string."runtime"   runtime  ş,go.importpath.runtime.                       &go.string."runtime"   ş*go.string.hdr."bufio"                       "go.string."bufio"   ş"go.string."bufio"   bufio  ş(go.importpath.bufio.                       "go.string."bufio"   ş*go.string.hdr."bytes"                       "go.string."bytes"   ş"go.string."bytes"   bytes  ş(go.importpath.bytes.                       "go.string."bytes"   ş$go.string.hdr."io"                       go.string."io"   şgo.string."io"   io  ş"go.importpath.io.                       go.string."io"   ş,go.string.hdr."crypto"                       $go.string."crypto"   ş$go.string."crypto"   crypto  ş*go.importpath.crypto.                       $go.string."crypto"   ş(go.string.hdr."hash"                        go.string."hash"   ş go.string."hash"   
+hash  ş&go.importpath.hash.                        go.string."hash"   ş.go.string.hdr."strconv"                       &go.string."strconv"   ş&go.string."strconv"   strconv  ş,go.importpath.strconv.                       &go.string."strconv"   ş:go.string.hdr."net/textproto"                       2go.string."net/textproto"   ş2go.string."net/textproto"    net/textproto  ş8go.importpath.net/textproto.                       2go.string."net/textproto"   şbgo.string.hdr."golang.org/x/crypto/openpgp/armor"             !          Zgo.string."golang.org/x/crypto/openpgp/armor"   şZgo.string."golang.org/x/crypto/openpgp/armor" P  Dgolang.org/x/crypto/openpgp/armor  ş`go.importpath.golang.org/x/crypto/openpgp/armor.             !          Zgo.string."golang.org/x/crypto/openpgp/armor"   şdgo.string.hdr."golang.org/x/crypto/openpgp/errors"             "          \go.string."golang.org/x/crypto/openpgp/errors"   ş\go.string."golang.org/x/crypto/openpgp/errors" P  Fgolang.org/x/crypto/openpgp/errors  şbgo.importpath.golang.org/x/crypto/openpgp/errors.             "          \go.string."golang.org/x/crypto/openpgp/errors"   şdgo.string.hdr."golang.org/x/crypto/openpgp/packet"             "          \go.string."golang.org/x/crypto/openpgp/packet"   ş\go.string."golang.org/x/crypto/openpgp/packet" P  Fgolang.org/x/crypto/openpgp/packet  şbgo.importpath.golang.org/x/crypto/openpgp/packet.             "          \go.string."golang.org/x/crypto/openpgp/packet"   ş"runtime.zerovalue      ÿÿgo13ld
