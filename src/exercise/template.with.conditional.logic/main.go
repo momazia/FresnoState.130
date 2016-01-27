@@ -1,3 +1,9 @@
+/*
+	Source: 		Column AN in Gradebook
+	Author: 		Mohamad Mahdi Ziaee
+	Description:	Create a template that uses conditional logic
+*/
+
 package main
 
 import (
@@ -6,7 +12,7 @@ import (
 	"text/template"
 )
 
-const condition bool = true // Constant used to show difference results using the template.
+const condition bool = false // Constant used to show difference results using the template.
 
 func main() {
 

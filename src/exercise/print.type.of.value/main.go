@@ -1,3 +1,8 @@
+/*
+	Source: 		Column AO in Gradebook
+	Author: 		Mohamad Mahdi Ziaee
+	Description:	Create a program that shows the type of some variable (use fmt.Printf)
+*/
 package main
 
 import (
