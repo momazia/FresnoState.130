@@ -17,7 +17,7 @@ const condition bool = false // Constant used to show difference results using t
 func main() {
 
 	//Parsing the template
-	temp, err := template.ParseFiles("src/exercise/template.with.conditional.logic/conditional.logic.temp.html")
+	temp, err := template.ParseFiles("conditional.logic.temp.html")
 
 	// Logging possible errors
 	logError(err)
