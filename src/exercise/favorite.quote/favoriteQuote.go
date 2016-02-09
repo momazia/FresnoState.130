@@ -1,4 +1,4 @@
-package main
+package favoriteQuote
 
 import (
 	"io"
@@ -10,6 +10,6 @@ const QUOTE string = "A man's enjoyment of all good things is in exact proportio
 /*
 Prints out a famous quote into http response.
 */
-func favoriteQuote(res http.ResponseWriter, req *http.Request) {
+func FavoriteQuote(res http.ResponseWriter, req *http.Request) {
 	io.WriteString(res, QUOTE)
 }
