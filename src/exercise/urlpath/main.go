@@ -22,10 +22,3 @@ func main() {
 	log.Println("Listening to 8080 ...")
 	http.ListenAndServe(":8080", nil)
 }
-
-// Logs the error given into log
-func logError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}
