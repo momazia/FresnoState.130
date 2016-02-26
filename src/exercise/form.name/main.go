@@ -26,7 +26,7 @@ func userNameForm(res http.ResponseWriter, req *http.Request) {
 	firstName := req.FormValue("firstName")
 	lastName := req.FormValue("lastName")
 
-	if firstName != "" || lastName != "" {
+	if req.Method == "POST" {
 		err = temp.Execute(res, Person{firstName, lastName})
 	}else {
 		err = temp.Execute(res, false)
