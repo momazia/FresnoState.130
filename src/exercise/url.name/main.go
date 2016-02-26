@@ -1,7 +1,7 @@
 /*
-	Source: 		Column AV in Gradebook
+	Source: 		Column AW in Gradebook
 	Author: 		Mohamad Mahdi Ziaee
-	Description:	Create a webpage that displays the URL path using req.URL.Path
+	Description:	Create a webpage that serves at localhost:8080 and will display the name in the url when the url is localhost:8080/name - use req.URL.Path to do this
 */
 package main
 
@@ -9,13 +9,16 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func main() {
 
 	// Registering the URL path and binding it to surferPage handler
 	http.HandleFunc("/", func(res http.ResponseWriter, req *http.Request) {
-		io.WriteString(res, "URL:"+req.URL.Path)
+		name := strings.Split(req.URL.Path, "/")
+		log.Println(name)
+		io.WriteString(res, "Name: "+name[1])
 	})
 
 	// Setting the listener on port 8080
