@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>User Name Form</title>
+</head>
+<body>
+	<form method="POST" action="/">
+		<p>
+			First Name:<input type="text" name="firstName" />
+		</p>
+		<p>
+			Last Name:<input type="text" name="lastName" />
+		</p>
+		<p>
+			<input type="submit" value="Show the name" />
+		</p>
+	</form>
+	<p>
+	{{if .}} 
+		Your name is {{.FirstName}}, {{.LastName}} ... Duh!!! 
+	{{end}}
+	</p>
+</body>
+</html>
