@@ -1,7 +1,7 @@
 package main
 
 import (
-	"exercise/favorite.quote"
+	"github.com/momazia/GoTraining/exercise/favorite.quote"
 	"log"
 	"net/http"
 )
