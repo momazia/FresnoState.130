@@ -56,22 +56,27 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 
 func createTemplateData(req *http.Request, cookieChanged bool) TemplateData {
 	userDataCookie, err := req.Cookie("userData")
+
 	if err == nil {
+
 		var dataChanged bool = false
 		bytes, err := base64.StdEncoding.DecodeString(userDataCookie.Value)
 		if err != nil {
 			dataChanged = true
 		}
+
 		var userData User
 		err = json.Unmarshal(bytes, &userData)
 		if err != nil {
 			dataChanged = true
 		}
+
 		return TemplateData{
-			Error:    cookieChanged || dataChanged,
+			Error:    cookieChanged || dataChanged, // As long as one of them is changed we want to show the error
 			LoggedIn: userData.LoggedIn,
 		}
 	}
+
 	return TemplateData{
 		Error:    cookieChanged,
 		LoggedIn: false,
@@ -80,16 +85,21 @@ func createTemplateData(req *http.Request, cookieChanged bool) TemplateData {
 
 // Validates to make sure the cookies have been modified on client side.
 func validateCookie(req *http.Request) bool {
+
 	for key, value := range cookiesDigests {
+
 		log.Println("Key:", key, "Value:", value)
 		cookie, err := req.Cookie(key)
+
 		if err == nil {
 			log.Println("Cookie:" + cookie.String())
+
 			// Logging the possible errors
 			if value != generateDigest(cookie.Value) {
 				log.Println("The following cookie has been changed: [" + key + "]")
 				return true
 			}
+
 		} else {
 			log.Println(err)
 		}
