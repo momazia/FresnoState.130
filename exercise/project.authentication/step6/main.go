@@ -1,8 +1,8 @@
 /*
 	Source: 		Column BL in Gradebook
 	Author: 		Mohamad Mahdi Ziaee
-	Description:	PROJECT STEP 5 - continuing to build our application,
-					integrate HMAC into our application to ensure that nobody tampers with the cookie.
+	Description:	PROJECT STEP 6 - create a page which illustrates what happens when a user changes a cookie.
+					You can hard-code a changed cookie into your code.
 	Comment:		Change the cookie on the client by running the following JS: document.cookie="userData=new data"
 */
 
@@ -35,7 +35,7 @@ const (
 func loginHandler(res http.ResponseWriter, req *http.Request) {
 
 	// validating the cookies
-	validateCookie(req)
+	errMessage := validateCookie(req)
 
 	setCookies(res, req)
 
@@ -43,13 +43,13 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 	// Logging possible errors
 	logFatalError(err)
 
-	temp.Execute(res, nil)
+	temp.Execute(res, errMessage)
 	// Logging possible errors
 	logFatalError(err)
 }
 
 // Validates to make sure the cookies have been modified on client side.
-func validateCookie(req *http.Request) {
+func validateCookie(req *http.Request) string {
 	for key, value := range cookiesDigests {
 		log.Println("Key:", key, "Value:", value)
 		cookie, err := req.Cookie(key)
@@ -57,13 +57,15 @@ func validateCookie(req *http.Request) {
 			log.Println("Cookie:" + cookie.String())
 			// Logging the possible errors
 			if value != generateDigest(cookie.Value) {
-				log.Println("The following cookie has been changed: [" + key + "]")
-				return
+				errorMessage := "The following cookie has been changed: [" + key + "]"
+				log.Println(errorMessage)
+				return errorMessage
 			}
 		} else {
 			log.Println(err)
 		}
 	}
+	return ""
 }
 
 // Sets the cookies on the response

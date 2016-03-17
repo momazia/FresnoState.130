@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create user</title>
+</head>
+<body>
+	<h1>User's info</h1>
+	<form method="POST" action="/">
+		<p>
+			Name:<input type="text" name="name" />
+		</p>
+		<p>
+			Age:<input type="text" name="age" />
+		</p>
+		<p>
+			<input type="submit" value="Submit" />
+		</p>
+	</form>
+	{{if .}}
+	<h1>Error</h1>
+	<p>{{.}}</p>
+	{{end}}
+</body>
+</html>
