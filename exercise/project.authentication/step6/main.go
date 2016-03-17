@@ -1,5 +1,5 @@
 /*
-	Source: 		Column BL in Gradebook
+	Source: 		Column BN in Gradebook
 	Author: 		Mohamad Mahdi Ziaee
 	Description:	PROJECT STEP 6 - create a page which illustrates what happens when a user changes a cookie.
 					You can hard-code a changed cookie into your code.

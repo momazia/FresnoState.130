@@ -1,5 +1,5 @@
 /*
-	Source: 		Column BL in Gradebook
+	Source: 		Column BM in Gradebook
 	Author: 		Mohamad Mahdi Ziaee
 	Description:	PROJECT STEP 5 - continuing to build our application,
 					integrate HMAC into our application to ensure that nobody tampers with the cookie.
