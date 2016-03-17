@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Create user</title>
+</head>
+<body>
+	{{if .Error}}
+		<h1>Error</h1>
+		<p>Cookie has been changed!</p>
+	{{else}}
+		{{if .LoggedIn}}
+			<form method="POST" action="/logout">
+				<input type="submit" value="Logout">
+			</form>
+		{{else}}
+			<h1>User's info</h1>
+			<form method="POST" action="/">
+				<p>
+					Name:<input type="text" name="name" />
+				</p>
+				<p>
+					Age:<input type="text" name="age" />
+				</p>
+				<p>
+					<input type="submit" value="Submit" />
+				</p>
+			</form>
+		{{end}}
+	{{end}} 
+</body>
+</html>
