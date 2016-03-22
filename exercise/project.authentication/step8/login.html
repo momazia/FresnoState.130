@@ -6,7 +6,7 @@
 </head>
 <body>
 	<h1>Login</h1>
-	<form method="POST" action="/">
+	<form method="POST" action="/login">
 		<p>
 			Username:<input type="text" name="userName" />
 		</p>
@@ -19,5 +19,6 @@
 	</form>
 	{{if .}}
 	<p>Invalid user name or password!</p>
+	{{end}}
 </body>
 </html>
