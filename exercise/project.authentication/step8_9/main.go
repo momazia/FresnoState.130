@@ -18,7 +18,6 @@ import (
 )
 
 const (
-	PRIVATE_KEY   string = "Some Private Key"
 	SESSIONID     string = "SESSIONID"
 	URL_LOGIN     string = "/login"
 	URL_USERFORM  string = "/userForm"
