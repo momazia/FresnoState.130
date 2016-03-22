@@ -17,6 +17,7 @@ import (
 	//	"io"
 	"log"
 	"net/http"
+	"auth"
 	"text/template"
 )
 
@@ -29,8 +30,6 @@ var validUsers = []User{
 	{UserName: "Mahdi", Password: "123"},
 	{UserName: "Amin", Password: "321"},
 }
-
-var sessions = []string{}
 
 func loginHandler(res http.ResponseWriter, req *http.Request) {
 	var isInvalidUser bool = false
@@ -49,10 +48,12 @@ func loginHandler(res http.ResponseWriter, req *http.Request) {
 	temp.Execute(res, isInvalidUser)
 	logFatalError(err)
 }
+
 func isValidUser(req *http.Request) bool {
 	formUserName := req.FormValue("userName")
 	formPassword := req.FormValue("password")
 }
+
 func userFormHandler(res http.ResponseWriter, req *http.Request) {
 	temp, err := template.ParseFiles("userForm.html")
 	logFatalError(err)
@@ -62,25 +63,8 @@ func userFormHandler(res http.ResponseWriter, req *http.Request) {
 }
 
 func landingPageHandler(res http.ResponseWriter, req *http.Request) {
-	if isUserLoggedIn(res, req) {
-		http.Redirect(res, req, "/userForm", http.StatusFound)
-		return
-	}
-	http.Redirect(res, req, "/login", http.StatusFound)
-}
-
-func isUserLoggedIn(res http.ResponseWriter, req *http.Request) bool {
-	sessionIdCookie, err := req.Cookie("SESSIONID")
-	if err != nil {
-		log.Println("Error reading SESSIONID:" + err.Error())
-		return false
-	}
-	for _, session := range sessions {
-		if session == sessionIdCookie.Value {
-			return true
-		}
-	}
-	return false
+	http.Redirect(res, req, "/userForm", http.StatusFound)
+	return
 }
 
 func main() {
@@ -88,13 +72,13 @@ func main() {
 	http.Handle("/favicon.ico", http.NotFoundHandler())
 
 	// Setting the landing page
-	http.HandleFunc("/", landingPageHandler)
+	http.HandleFunc("/", authenticationFilter(landingPageHandler))
 
 	// Setting the handler for login
 	http.HandleFunc("/login", loginHandler)
 
 	// Setting the handler for userForm
-	http.HandleFunc("/userForm", userFormHandler)
+	http.HandleFunc("/userForm", authenticationFilter(userFormHandler))
 
 	// Setting the listener on port 8080
 	log.Println("Listening to 8080 ...")
