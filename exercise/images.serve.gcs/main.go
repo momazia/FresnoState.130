@@ -1,7 +1,7 @@
 /*
-	Source: 		Column CB in Gradebook
+	Source: 		Column CC in Gradebook
 	Author: 		Mohamad Mahdi Ziaee
-	Description:	Create a web app that uses a google cloud storage query (storage.Query) and demonstrates the functionality of the query's delimeter field
+	Description:	Take the code at this github repo and have images serve from GCS
 */
 
 package storage
@@ -11,15 +11,15 @@ import (
 	"google.golang.org/appengine"
 	storageLog "google.golang.org/appengine/log"
 	"google.golang.org/cloud/storage"
+	"html/template"
 	"log"
 	"net/http"
-	"os"
-	"text/template"
 )
 
 const BUCKET_NAME = "gotraining-1271.appspot.com"
 
 func init() {
+	http.Handle("/css/", http.StripPrefix("/css", http.FileServer(http.Dir("./css"))))
 	http.HandleFunc("/", handler)
 }
 
@@ -32,13 +32,9 @@ func handler(res http.ResponseWriter, req *http.Request) {
 	defer client.Close()
 
 	//Parsing the template
-	temp, err := template.ParseFiles("index.html")
-
-	// Logging possible errors
+	tpl := template.Must(template.ParseFiles("index.html"))
+	err = tpl.Execute(res, getPhotoNames(ctx, client))
 	logError(err)
-
-	// Executing the template using the constant
-	err = temp.Execute(os.Stdout, getPhotoNames(ctx, client))
 }
 
 func getPhotoNames(ctx context.Context, client *storage.Client) []string {
